@@ -27,6 +27,7 @@ Version 0.6.2 - 2014-05-09
   * BUGFIX: LWPolyline.get_rstrip_point() removed also x- and y-coords if zero
   * BUGFIX: opens DXF12 files without handles again
   * BUGFIX: opens DXF12 files with HEADER section but without $ACADVER set
+  * BUGFIX: wrong DXF subclass for Arc.extrusion (error in DXF Standard)
 
 Version 0.6.1 - 2014-05-02
 
