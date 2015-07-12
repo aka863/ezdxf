@@ -7,9 +7,9 @@ __author__ = "mozman <mozman@gmx.at>"
 
 from itertools import islice
 
-from .tags import TagGroups, DXFStructureError
-from .classifiedtags import ClassifiedTags, get_tags_linker
-from . import const
+from ezdxf.tags import TagGroups, DXFStructureError
+from ezdxf.classifiedtags import ClassifiedTags, get_tags_linker
+from ezdxf import const
 
 
 class BlocksSection(object):

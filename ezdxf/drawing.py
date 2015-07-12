@@ -11,10 +11,10 @@ import io
 from . import database
 from .tags import TagIterator, DXFTag
 from .dxffactory import dxffactory
-from .templatefinder import TemplateFinder
+from ezdxf.templates import TemplateFinder
 from .options import options
 from .codepage import tocodepage, toencoding
-from .sections import Sections
+from ezdxf.sections import Sections
 from .juliandate import juliandate
 
 
@@ -164,14 +164,11 @@ class Drawing(object):
         codepage = self.header.get('$DWGCODEPAGE', 'ANSI_1252')
         return toencoding(codepage)
 
-    @staticmethod
-    def new(dxfversion='AC1009'):
+    @classmethod
+    def new(cls, dxfversion='AC1009'):
         finder = TemplateFinder(options.template_dir)
-        stream = finder.getstream(dxfversion)
-        try:
-            dwg = Drawing.read(stream)
-        finally:
-            stream.close()
+        with finder.getstream(dxfversion) as stream:
+            dwg = cls.read(stream)
         dwg._setup_metadata()
         return dwg
 

@@ -5,11 +5,11 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from ..tags import DXFTag
-from ..classifiedtags import ClassifiedTags
-from ..legacy import tableentries as legacy
-from ..dxfentity import DXFEntity
-from ..dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from ezdxf.tags import DXFTag
+from ezdxf.classifiedtags import ClassifiedTags
+from ezdxf.dxffactory.legacy import tableentries as legacy
+from ezdxf.dxfentity import DXFEntity
+from ezdxf.dxfattr import DXFAttr, DXFAttributes, DefSubclass
 
 _LAYERTEMPLATE = """  0
 LAYER

@@ -5,12 +5,12 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from ..classifiedtags import ClassifiedTags
-from ..dxfattr import DXFAttr, DXFAttributes, DefSubclass
-from ..dxfentity import DXFEntity
-from .. import const
-from ..const import VERTEXNAMES
-from ..facemixins import PolyfaceMixin, PolymeshMixin
+from ezdxf.classifiedtags import ClassifiedTags
+from ezdxf.dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from ezdxf.dxfentity import DXFEntity
+from ezdxf import const
+from ezdxf.const import VERTEXNAMES
+from ezdxf.facemixins import PolyfaceMixin, PolymeshMixin
 
 
 class ColorMixin(object):

@@ -8,9 +8,9 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from .graphicsfactory import ModernGraphicsFactory
-from ..legacy.layouts import DXF12Layout, DXF12BlockLayout
-from ..classifiedtags import ClassifiedTags
+from ezdxf.dxffactory.modern.graphicsfactory import ModernGraphicsFactory
+from ezdxf.dxffactory.legacy.layouts import DXF12Layout, DXF12BlockLayout
+from ezdxf.classifiedtags import ClassifiedTags
 
 
 class Layouts(object):

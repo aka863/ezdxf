@@ -9,8 +9,8 @@ from __future__ import unicode_literals
 
 import unittest
 
-from ezdxf.legacy.tableentries import Layer, Linetype, Style, AppID, UCS
-from ezdxf.legacy.tableentries import View, Viewport, DimStyle
+from ezdxf.dxffactory.legacy.tableentries import Layer, Linetype, Style, AppID, UCS
+from ezdxf.dxffactory.legacy.tableentries import View, Viewport, DimStyle
 
 
 class TestNewLayer(unittest.TestCase):

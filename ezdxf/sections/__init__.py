@@ -5,12 +5,12 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from .defaultchunk import DefaultChunk, iter_chunks, CompressedDefaultChunk
-from .headersection import HeaderSection
-from .tablessection import TablesSection
-from .blockssection import BlocksSection
-from .entitysection import EntitySection, ClassesSection, ObjectsSection
-from .options import options
+from ezdxf.defaultchunk import DefaultChunk, iter_chunks, CompressedDefaultChunk
+from ezdxf.sections.header import HeaderSection
+from ezdxf.sections.tables import TablesSection
+from ezdxf.sections.blocks import BlocksSection
+from ezdxf.sections.entity import EntitySection, ClassesSection, ObjectsSection
+from ezdxf.options import options
 
 
 class Sections(object):
@@ -98,7 +98,7 @@ SECTION_MAP = {
     'BLOCKS': BlocksSection,
     'ENTITIES': EntitySection,
     'OBJECTS': ObjectsSection,
-}
+    }
 
 KNOWN_SECTIONS = ('header', 'classes', 'tables', 'blocks', 'entities', 'objects', 'thumbnailimage', 'acdsdata')
 

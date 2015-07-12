@@ -63,11 +63,11 @@ the section markers and table headers present:
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from .headervars import VARMAP
+from ezdxf.dxffactory.legacy.headervars import VARMAP
 from . import tableentries
-from . import graphics
+from ezdxf.dxffactory.legacy import graphics, tableentries
 
-from .layouts import DXF12Layouts, DXF12BlockLayout
+from ezdxf.dxffactory.legacy.layouts import DXF12Layouts, DXF12BlockLayout
 
 
 ENTITY_WRAPPERS = {

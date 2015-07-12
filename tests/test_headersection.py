@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 import unittest
 
 from ezdxf.testtools import DrawingProxy, Tags
-from ezdxf.headersection import HeaderSection
+from ezdxf.sections.header import HeaderSection
 
 
 class TestHeaderSection(unittest.TestCase):

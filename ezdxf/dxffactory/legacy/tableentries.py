@@ -5,10 +5,10 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from ..dxfentity import DXFEntity
-from ..tags import DXFTag
-from ..classifiedtags import ClassifiedTags
-from ..dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from ezdxf.dxfentity import DXFEntity
+from ezdxf.tags import DXFTag
+from ezdxf.classifiedtags import ClassifiedTags
+from ezdxf.dxfattr import DXFAttr, DXFAttributes, DefSubclass
 
 _LAYERTEMPLATE = """  0
 LAYER

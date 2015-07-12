@@ -12,7 +12,7 @@ import unittest
 import ezdxf
 from ezdxf.const import VTX_3D_POLYLINE_VERTEX
 from ezdxf.testtools import DrawingProxy, Tags
-from ezdxf.entitysection import EntitySection
+from ezdxf.sections.entity import EntitySection
 
 DWG = ezdxf.new('AC1015')
 

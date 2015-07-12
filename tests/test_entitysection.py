@@ -12,7 +12,7 @@ from io import StringIO
 
 import ezdxf
 from ezdxf.testtools import DrawingProxy, normlines, Tags
-from ezdxf.entitysection import EntitySection
+from ezdxf.sections.entity import EntitySection
 
 
 def make_test_drawing(version):

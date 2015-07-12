@@ -7,12 +7,12 @@ from __future__ import unicode_literals
 
 __author__ = "mozman <mozman@gmx.at>"
 
-from .headervars import VARMAP
-from ..legacy import LegacyDXFFactory
-from . import tableentries
+from ezdxf.dxffactory.modern.headervars import VARMAP
+from ezdxf.dxffactory.legacy import LegacyDXFFactory
+from ezdxf.dxffactory.modern import tableentries, dxfobjects, graphics
 from . import graphics
 from . import dxfobjects
-from .layouts import Layouts, BlockLayout
+from ezdxf.dxffactory.modern.layouts import Layouts, BlockLayout
 
 UPDATE_ENTITY_WRAPPERS = {
     # DXF Objects

@@ -6,9 +6,9 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from .graphicsfactory import GraphicsFactory
-from ..entityspace import EntitySpace
-from ..query import EntityQuery
+from ezdxf.dxffactory.legacy.graphicsfactory import GraphicsFactory
+from ezdxf.entityspace import EntitySpace
+from ezdxf.query import EntityQuery
 
 
 class DXF12Layouts(object):

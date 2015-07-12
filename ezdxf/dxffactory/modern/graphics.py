@@ -30,16 +30,16 @@ __author__ = "mozman <mozman@gmx.at>"
 from contextlib import contextmanager
 import math
 
-from ..legacy import graphics as legacy
-from ..tags import DXFTag, Tags, CompressedTags
-from ..dxftag import convert_tags_to_text_lines, convert_text_lines_to_tags
-from ..classifiedtags import ClassifiedTags
-from ..dxfattr import DXFAttr, DXFAttributes, DefSubclass
-from .. import const
-from ..facemixins import PolyfaceMixin, PolymeshMixin
-from ..tools import safe_3D_point
-from .. import crypt
-from ..const import DXFStructureError
+from ezdxf.dxffactory.legacy import graphics as legacy
+from ezdxf.tags import DXFTag, Tags
+from ezdxf.dxftag import convert_tags_to_text_lines, convert_text_lines_to_tags
+from ezdxf.classifiedtags import ClassifiedTags
+from ezdxf.dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from ezdxf import const
+from ezdxf.facemixins import PolyfaceMixin, PolymeshMixin
+from ezdxf.tools import safe_3D_point
+from ezdxf import crypt
+from ezdxf.const import DXFStructureError
 
 
 none_subclass = DefSubclass(None, {

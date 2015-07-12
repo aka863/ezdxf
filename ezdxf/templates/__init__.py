@@ -5,8 +5,8 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-import os
 import io
+import os
 
 
 class TemplateFinder:
@@ -23,8 +23,7 @@ class TemplateFinder:
 
     def _get_template_dir(self, template_dir):
         if template_dir is None:
-            mydir = os.path.dirname(__file__)
-            template_dir = os.path.join(mydir, 'templates')
+            template_dir = os.path.dirname(__file__)
         return template_dir
 
     def filepath(self, dxfversion):

@@ -5,9 +5,9 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from .legacy import LegacyDXFFactory
-from .modern import ModernDXFFactory
-from .const import acadrelease, DXFVersionError, unsupported_dxf_versions
+from ezdxf.dxffactory.legacy import LegacyDXFFactory
+from ezdxf.dxffactory.modern import ModernDXFFactory
+from ezdxf.const import acadrelease, DXFVersionError, unsupported_dxf_versions
 
 
 def dxffactory(drawing):

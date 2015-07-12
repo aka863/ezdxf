@@ -5,10 +5,10 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from .defaultchunk import iter_chunks
-from .table import GenericTable, Table, ViewportTable
-from .tags import DXFStructureError, Tags
-from .options import options
+from ezdxf.defaultchunk import iter_chunks
+from ezdxf.table import GenericTable, Table, ViewportTable
+from ezdxf.tags import DXFStructureError, Tags
+from ezdxf.options import options
 
 MIN_TABLE_SECTION = """  0
 SECTION
