@@ -42,19 +42,9 @@ from ezdxf import crypt
 from ezdxf.const import DXFStructureError
 
 
-none_subclass = DefSubclass(None, {
-    'handle': DXFAttr(5),
-    'owner': DXFAttr(330),  # Soft-pointer ID/handle to owner BLOCK_RECORD object
-})
-
-entity_subclass = DefSubclass('AcDbEntity', {
-    'paperspace': DXFAttr(67, default=0),  # 0 .. modelspace, 1 .. paperspace
-    'layer': DXFAttr(8, default='0'),  # layername as string
-    'linetype': DXFAttr(6, default='BYLAYER'),  # linetype as string, special names BYLAYER/BYBLOCK
-    'ltscale': DXFAttr(48, default=1.0),  # linetype scale
-    'invisible': DXFAttr(60, default=0),  # invisible .. 1, visible .. 0
-    'color': DXFAttr(62, default=256),  # dxf color index, 0 .. BYBLOCK, 256 .. BYLAYER
-})
+class BaseAttribs(DXFAttributes):
+    handle = DXFAttr(5)
+    owner = DXFAttr(330)
 
 
 class GraphicEntity(legacy.GraphicEntity):
@@ -70,7 +60,13 @@ class GraphicEntity(legacy.GraphicEntity):
 
      Wrapper for all unsupported graphic entities.
     """
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass)
+    class DXFATTRIBS(BaseAttribs):
+        paperspace = DXFAttr(67, default=0)  # 0 .. modelspace, 1 .. paperspace
+        layer = DXFAttr(8, default='0')  # layername as string
+        linetype = DXFAttr(6, default='BYLAYER')  # linetype as string, special names BYLAYER/BYBLOCK
+        ltscale = DXFAttr(48, default=1.0)  # linetype scale
+        invisible = DXFAttr(60, default=0)  # invisible .. 1, visible .. 0
+        color = DXFAttr(62, default=256)  # dxf color index, 0 .. BYBLOCK, 256 .. BYLAYER
 
 _LINETEMPLATE = """  0
 LINE
@@ -98,17 +94,15 @@ AcDbLine
 1.0
 """
 
-line_subclass = DefSubclass('AcDbLine', {
-    'start': DXFAttr(10, xtype='Point2D/3D'),
-    'end': DXFAttr(11, xtype='Point2D/3D'),
-    'thickness': DXFAttr(39, default=0),
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-})
-
 
 class Line(legacy.Line):
     TEMPLATE = ClassifiedTags.from_text(_LINETEMPLATE)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, line_subclass)
+
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        start = DXFAttr(10, xtype='Point2D/3D')
+        end = DXFAttr(11, xtype='Point2D/3D')
+        thickness = DXFAttr(39, default=0)
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
 
 _POINT_TPL = """  0
 POINT
@@ -130,15 +124,16 @@ AcDbPoint
 0.0
 """
 point_subclass = DefSubclass('AcDbPoint', {
-    'location': DXFAttr(10, 'Point2D/3D'),
-    'thickness': DXFAttr(39, None),
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
 })
 
 
 class Point(legacy.Point):
     TEMPLATE = ClassifiedTags.from_text(_POINT_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, point_subclass)
+
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        location = DXFAttr(10, 'Point2D/3D')
+        thickness = DXFAttr(39, None)
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
 
 _CIRCLE_TPL = """  0
 CIRCLE
@@ -161,17 +156,16 @@ AcDbCircle
  40
 1.0
 """
-circle_subclass = DefSubclass('AcDbCircle', {
-    'center': DXFAttr(10, xtype='Point2D/3D'),
-    'radius': DXFAttr(40),
-    'thickness': DXFAttr(39, default=0.0),
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-})
 
 
 class Circle(legacy.Circle):
     TEMPLATE = ClassifiedTags.from_text(_CIRCLE_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, circle_subclass)
+
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        center = DXFAttr(10, xtype='Point2D/3D')
+        radius = DXFAttr(40)
+        thickness = DXFAttr(39, default=0.0)
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
 
 _ARC_TPL = """  0
 ARC
@@ -201,15 +195,13 @@ AcDbArc
 360
 """
 
-arc_subclass = DefSubclass('AcDbArc', {
-    'start_angle': DXFAttr(50),
-    'end_angle': DXFAttr(51),
-})
-
 
 class Arc(legacy.Arc):
     TEMPLATE = ClassifiedTags.from_text(_ARC_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, circle_subclass, arc_subclass)
+
+    class DXFATTRIBS(Circle.DXFATTRIBS):
+        start_angle = DXFAttr(50)
+        end_angle = DXFAttr(51)
 
 _TRACE_TPL = """  0
 TRACE
@@ -248,19 +240,18 @@ AcDbTrace
  33
 0.0
 """
-trace_subclass = DefSubclass('AcDbTrace', {
-    'vtx0': DXFAttr(10, xtype='Point2D/3D'),
-    'vtx1': DXFAttr(11, xtype='Point2D/3D'),
-    'vtx2': DXFAttr(12, xtype='Point2D/3D'),
-    'vtx3': DXFAttr(13, xtype='Point2D/3D'),
-    'thickness': DXFAttr(39, default=0.0),
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-})
 
 
 class Trace(legacy.Trace):
     TEMPLATE = ClassifiedTags.from_text(_TRACE_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, trace_subclass)
+
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        vtx0 = DXFAttr(10, xtype='Point2D/3D')
+        vtx1 = DXFAttr(11, xtype='Point2D/3D')
+        vtx2 = DXFAttr(12, xtype='Point2D/3D')
+        vtx3 = DXFAttr(13, xtype='Point2D/3D')
+        thickness = DXFAttr(39, default=0.0)
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
 
 
 class Solid(Trace):
@@ -303,18 +294,17 @@ AcDbFace
  33
 0.0
 """
-face_subclass = DefSubclass('AcDbFace', {
-    'vtx0': DXFAttr(10, xtype='Point3D'),
-    'vtx1': DXFAttr(11, xtype='Point3D'),
-    'vtx2': DXFAttr(12, xtype='Point3D'),
-    'vtx3': DXFAttr(13, xtype='Point3D'),
-    'invisible_edge': DXFAttr(70, default=0),
-})
 
 
 class Face(legacy.Face):
     TEMPLATE = ClassifiedTags.from_text(_3DFACE_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, face_subclass)
+
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        vtx0 = DXFAttr(10, xtype='Point3D')
+        vtx1 = DXFAttr(11, xtype='Point3D')
+        vtx2 = DXFAttr(12, xtype='Point3D')
+        vtx3 = DXFAttr(13, xtype='Point3D')
+        invisible_edge = DXFAttr(70, default=0)
 
 _TEXT_TPL = """  0
 TEXT
@@ -361,27 +351,24 @@ AcDbText
  73
 0
 """
-text_subclass = (
-    DefSubclass('AcDbText', {
-        'insert': DXFAttr(10, xtype='Point2D/3D'),
-        'height': DXFAttr(40),
-        'text': DXFAttr(1),
-        'rotation': DXFAttr(50, default=0.0),  # in degrees (circle = 360deg)
-        'oblique': DXFAttr(51, default=0.0),  # in degrees, vertical = 0deg
-        'style': DXFAttr(7, default='STANDARD'),  # text style
-        'width': DXFAttr(41, default=1.0),  # width FACTOR!
-        'text_generation_flag': DXFAttr(71, default=0),  # 2 = backward (mirr-x), 4 = upside down (mirr-y)
-        'halign': DXFAttr(72, default=0),  # horizontal justification
-        'align_point': DXFAttr(11, xtype='Point2D/3D'),
-        'thickness': DXFAttr(39, default=0.0),
-        'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-    }),
-    DefSubclass('AcDbText', {'valign': DXFAttr(73, default=0)}))
 
 
 class Text(legacy.Text):
     TEMPLATE = ClassifiedTags.from_text(_TEXT_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, *text_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        insert = DXFAttr(10, xtype='Point2D/3D')
+        height = DXFAttr(40) 
+        text = DXFAttr(1) 
+        rotation = DXFAttr(50, default=0.0)   # in degrees (circle = 360deg)
+        oblique = DXFAttr(51, default=0.0)   # in degrees, vertical = 0deg
+        style = DXFAttr(7, default='STANDARD')   # text style
+        width = DXFAttr(41, default=1.0)   # width FACTOR!
+        text_generation_flag = DXFAttr(71, default=0),  # 2 = backward (mirr-x)  4 = upside down (mirr-y)
+        halign = DXFAttr(72, default=0)   # horizontal justification
+        align_point = DXFAttr(11, xtype='Point2D/3D') 
+        thickness = DXFAttr(39, default=0.0) 
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)) 
+        valign = DXFAttr(73, default=0) 
 
 _POLYLINE_TPL = """  0
 POLYLINE
@@ -407,24 +394,22 @@ AcDb2dPolyline
 0.0
 """
 
-polyline_subclass = DefSubclass('AcDb2dPolyline', {
-    'elevation': DXFAttr(10, xtype='Point3D'),
-    'flags': DXFAttr(70, default=0),
-    'default_start_width': DXFAttr(40, default=0.0),
-    'default_end_width': DXFAttr(41, default=0.0),
-    'm_count': DXFAttr(71, default=0),
-    'n_count': DXFAttr(72, default=0),
-    'm_smooth_density': DXFAttr(73, default=0),
-    'n_smooth_density': DXFAttr(74, default=0),
-    'smooth_type': DXFAttr(75, default=0),
-    'thickness': DXFAttr(39, default=0.0),
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-})
-
 
 class Polyline(legacy.Polyline):
     TEMPLATE = ClassifiedTags.from_text(_POLYLINE_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, polyline_subclass)
+
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        elevation = DXFAttr(10, xtype='Point3D')
+        flags = DXFAttr(70, default=0)
+        default_start_width = DXFAttr(40, default=0.0)
+        default_end_width = DXFAttr(41, default=0.0)
+        m_count = DXFAttr(71, default=0)
+        n_count = DXFAttr(72, default=0)
+        m_smooth_density = DXFAttr(73, default=0)
+        n_smooth_density = DXFAttr(74, default=0)
+        smooth_type = DXFAttr(75, default=0)
+        thickness = DXFAttr(39, default=0.0)
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
 
     def post_new_hook(self):
         super(Polyline, self).post_new_hook()
@@ -509,29 +494,24 @@ AcDb2dVertex
  70
 0
 """
-vertex_subclass = (
-    DefSubclass('AcDbVertex', {}),  # subclasses[2]
-    DefSubclass('AcDb2dVertex', {  # subclasses[3]
-        'location': DXFAttr(10, xtype='Point2D/3D'),
-        'start_width': DXFAttr(40, default=0.0),
-        'end_width': DXFAttr(41, default=0.0),
-        'bulge': DXFAttr(42, default=0),
-        'flags': DXFAttr(70),
-        'tangent': DXFAttr(50),
-        'vtx0': DXFAttr(71),
-        'vtx1': DXFAttr(72),
-        'vtx2': DXFAttr(73),
-        'vtx3': DXFAttr(74),
-    })
-)
-
 
 EMPTY_VERTEX_SUBCLASS = Tags()
 
 
 class Vertex(legacy.Vertex):
     TEMPLATE = ClassifiedTags.from_text(_VERTEX_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, *vertex_subclass)
+
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        location = DXFAttr(10, xtype='Point2D/3D')
+        start_width = DXFAttr(40, default=0.0)
+        end_width = DXFAttr(41, default=0.0)
+        bulge = DXFAttr(42, default=0)
+        flags = DXFAttr(70)
+        tangent = DXFAttr(50)
+        vtx0 = DXFAttr(71)
+        vtx1 = DXFAttr(72)
+        vtx2 = DXFAttr(73)
+        vtx3 = DXFAttr(74)
 
     def post_new_hook(self):
         self.update_subclass_specifier()
@@ -563,7 +543,9 @@ class Vertex(legacy.Vertex):
 
 class SeqEnd(legacy.SeqEnd):
     TEMPLATE = ClassifiedTags.from_text("  0\nSEQEND\n  5\n0\n330\n 0\n100\nAcDbEntity\n")
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass)
+
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        pass
 
 _LWPOLYLINE_TPL = """  0
 LWPOLYLINE
@@ -583,21 +565,20 @@ AcDbPolyline
 0
 """
 
-lwpolyline_subclass = DefSubclass('AcDbPolyline', {
-    'elevation': DXFAttr(38, default=0.0),
-    'thickness': DXFAttr(39, default=0.0),
-    'flags': DXFAttr(70, default=0),
-    'const_width': DXFAttr(43, default=0.0),
-    'count': DXFAttr(90),
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-})
-
 LWPOINTCODES = (10, 20, 40, 41, 42)
 
 
 class LWPolyline(legacy.GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_LWPOLYLINE_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, lwpolyline_subclass)
+
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        elevation = DXFAttr(38, default=0.0)
+        thickness = DXFAttr(39, default=0.0)
+        flags = DXFAttr(70, default=0)
+        const_width = DXFAttr(43, default=0.0)
+        count = DXFAttr(90)
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
+
 
     @property
     def AcDbPolyline(self):
@@ -739,22 +720,19 @@ BLOCKNAME
   1
 
 """
-block_subclass = (
-    DefSubclass('AcDbEntity', {'layer': DXFAttr(8, default='0')}),
-    DefSubclass('AcDbBlockBegin', {
-        'name': DXFAttr(2),
-        'name2': DXFAttr(3),
-        'description': DXFAttr(4),
-        'flags': DXFAttr(70),
-        'base_point': DXFAttr(10, xtype='Point2D/3D'),
-        'xref_path': DXFAttr(1, default=""),
-    })
-)
 
 
 class Block(legacy.GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_BLOCK_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, *block_subclass)
+
+    class DXFATTRIBS(BaseAttribs):
+        layer = DXFAttr(8, default='0')
+        name = DXFAttr(2)
+        name2 = DXFAttr(3)
+        description = DXFAttr(4)
+        flags = DXFAttr(70)
+        base_point = DXFAttr(10, xtype='Point2D/3D')
+        xref_path = DXFAttr(1, default="")
 
 _ENDBLOCK_TPL = """  0
 ENDBLK
@@ -769,15 +747,14 @@ AcDbEntity
 100
 AcDbBlockEnd
 """
-endblock_subclass = (
-    DefSubclass('AcDbEntity', {'layer': DXFAttr(8, default='0')}),
-    DefSubclass('AcDbBlockEnd', {}),
-)
 
 
 class EndBlk(legacy.GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_ENDBLOCK_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, *endblock_subclass)
+
+    class DXFATTRIBS(BaseAttribs):
+        layer = DXFAttr(8, default='0')
+
 
 _INSERT_TPL = """  0
 INSERT
@@ -810,24 +787,24 @@ BLOCKNAME
 """
 
 insert_subclass = DefSubclass('AcDbBlockReference', {
-    'attribs_follow': DXFAttr(66, default=0),
-    'name': DXFAttr(2),
-    'insert': DXFAttr(10, xtype='Point2D/3D'),
-    'xscale': DXFAttr(41, default=1.0),
-    'yscale': DXFAttr(42, default=1.0),
-    'zscale': DXFAttr(43, default=1.0),
-    'rotation': DXFAttr(50, default=0.0),
-    'column_count': DXFAttr(70, default=1),
-    'row_count': DXFAttr(71, default=1),
-    'column_spacing': DXFAttr(44, default=0.0),
-    'row_spacing': DXFAttr(45, default=0.0),
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
 })
 
 
 class Insert(legacy.Insert):
     TEMPLATE = ClassifiedTags.from_text(_INSERT_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, insert_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        attribs_follow = DXFAttr(66, default=0)
+        name = DXFAttr(2)
+        insert = DXFAttr(10, xtype='Point2D/3D')
+        xscale = DXFAttr(41, default=1.0)
+        yscale = DXFAttr(42, default=1.0)
+        zscale = DXFAttr(43, default=1.0)
+        rotation = DXFAttr(50, default=0.0)
+        column_count = DXFAttr(70, default=1)
+        row_count = DXFAttr(71, default=1)
+        column_spacing = DXFAttr(44, default=0.0)
+        row_spacing = DXFAttr(45, default=0.0)
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
 
 _ATTDEF_TPL = """  0
 ATTDEF
@@ -883,34 +860,29 @@ TAG
 0
 """
 
-attdef_subclass = (
-    DefSubclass('AcDbText', {
-        'insert': DXFAttr(10, xtype='Point2D/3D'),
-        'thickness': DXFAttr(39, default=0.0),
-        'height': DXFAttr(40),
-        'text': DXFAttr(1),
-        'rotation': DXFAttr(50, default=0.0),
-        'width': DXFAttr(41, default=1.0),
-        'oblique': DXFAttr(51, default=0.0),
-        'style': DXFAttr(7, default='STANDARD'),
-        'text_generation_flag': DXFAttr(71, default=0),
-        'halign': DXFAttr(72, default=0),
-        'align_point': DXFAttr(11, xtype='Point2D/3D'),
-        'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-    }),
-    DefSubclass('AcDbAttributeDefinition', {
-        'prompt': DXFAttr(3),
-        'tag': DXFAttr(2),
-        'flags': DXFAttr(70),
-        'field_length': DXFAttr(73, default=0),
-        'valign': DXFAttr(74, default=0),
-    })
-)
-
 
 class Attdef(legacy.Attdef):
     TEMPLATE = ClassifiedTags.from_text(_ATTDEF_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, *attdef_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        # AcDbText
+        insert = DXFAttr(10, xtype='Point2D/3D')
+        thickness = DXFAttr(39, default=0.0)
+        height = DXFAttr(40)
+        text = DXFAttr(1)
+        rotation = DXFAttr(50, default=0.0)
+        width = DXFAttr(41, default=1.0)
+        oblique = DXFAttr(51, default=0.0)
+        style = DXFAttr(7, default='STANDARD')
+        text_generation_flag = DXFAttr(71, default=0)
+        halign = DXFAttr(72, default=0)
+        align_point = DXFAttr(11, xtype='Point2D/3D')
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
+        # AcDbAttributeDefinition
+        prompt = DXFAttr(3)
+        tag = DXFAttr(2)
+        flags = DXFAttr(70)
+        field_length = DXFAttr(73, default=0)
+        valign = DXFAttr(74, default=0)
 
 _ATTRIB_TPL = """  0
 ATTRIB
@@ -963,33 +935,30 @@ TAG
  31
 0.0
 """
-attrib_subclass = (
-    DefSubclass('AcDbText', {
-        'insert': DXFAttr(10, xtype='Point2D/3D'),
-        'thickness': DXFAttr(39, default=0.0),
-        'height': DXFAttr(40),
-        'text': DXFAttr(1),
-        'rotation': DXFAttr(50, default=0.0),  # error in DXF description, because placed in 'AcDbAttribute'
-        'width': DXFAttr(41, default=1.0),  # error in DXF description, because placed in 'AcDbAttribute'
-        'oblique': DXFAttr(51, default=0.0),  # error in DXF description, because placed in 'AcDbAttribute'
-        'style': DXFAttr(7, default='STANDARD'),  # error in DXF description, because placed in 'AcDbAttribute'
-        'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),  # error in DXF description, because placed in 'AcDbAttribute'
-    }),
-    DefSubclass('AcDbAttribute', {
-        'tag': DXFAttr(2),
-        'flags': DXFAttr(70),
-        'field_length': DXFAttr(73, default=0),
-        'text_generation_flag': DXFAttr(71, default=0),
-        'halign': DXFAttr(72, default=0),
-        'valign': DXFAttr(74, default=0),
-        'align_point': DXFAttr(11, xtype='Point2D/3D'),
-    })
-)
 
 
 class Attrib(legacy.Attrib):
     TEMPLATE = ClassifiedTags.from_text(_ATTRIB_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, *attrib_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        # AcDbText
+        insert = DXFAttr(10, xtype='Point2D/3D')
+        thickness = DXFAttr(39, default=0.0)
+        height = DXFAttr(40)
+        text = DXFAttr(1)
+        rotation = DXFAttr(50, default=0.0)   # error in DXF description, because placed in 'AcDbAttribute'
+        width = DXFAttr(41, default=1.0)   # error in DXF description, because placed in 'AcDbAttribute'
+        oblique = DXFAttr(51, default=0.0)   # error in DXF description, because placed in 'AcDbAttribute'
+        style = DXFAttr(7, default='STANDARD')   # error in DXF description, because placed in 'AcDbAttribute'
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))   # error in DXF description, because placed in 'AcDbAttribute'
+        # AcDbAttribute
+        tag = DXFAttr(2)
+        flags = DXFAttr(70)
+        field_length = DXFAttr(73, default=0)
+        text_generation_flag = DXFAttr(71, default=0)
+        halign = DXFAttr(72, default=0)
+        valign = DXFAttr(74, default=0)
+        align_point = DXFAttr(11, xtype='Point2D/3D')
+
 _ELLIPSE_TPL = """  0
 ELLIPSE
   5
@@ -1023,18 +992,20 @@ AcDbEllipse
 """
 
 ellipse_subclass = DefSubclass('AcDbEllipse', {
-    'center': DXFAttr(10, xtype='Point2D/3D'),
-    'major_axis': DXFAttr(11, xtype='Point2D/3D'),  # relative to the center
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-    'ratio': DXFAttr(40),
-    'start_param': DXFAttr(41),  # this value is 0.0 for a full ellipse
-    'end_param': DXFAttr(42),  # this value is 2*pi for a full ellipse
 })
 
 
 class Ellipse(legacy.GraphicEntity, legacy.ColorMixin):
     TEMPLATE = ClassifiedTags.from_text(_ELLIPSE_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, ellipse_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        # AcDbEllipse
+        center = DXFAttr(10, xtype='Point2D/3D')
+        major_axis = DXFAttr(11, xtype='Point2D/3D')   # relative to the center
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
+        ratio = DXFAttr(40)
+        start_param = DXFAttr(41)   # this value is 0.0 for a full ellipse
+        end_param = DXFAttr(42)   # this value is 2*pi for a full ellipse
+
 _RAY_TPL = """ 0
 RAY
   5
@@ -1060,15 +1031,14 @@ AcDbRay
  31
 0.0
 """
-ray_subclass = DefSubclass('AcDbRay', {
-    'start': DXFAttr(10, xtype='Point3D'),
-    'unit_vector': DXFAttr(11, xtype='Point3D'),
-})
 
 
 class Ray(legacy.GraphicEntity, legacy.ColorMixin):
     TEMPLATE = ClassifiedTags.from_text(_RAY_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, ray_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        # AcDbRay
+        start = DXFAttr(10, xtype='Point3D')
+        unit_vector = DXFAttr(11, xtype='Point3D')
 
 
 class XLine(Ray):
@@ -1103,38 +1073,36 @@ AcDbMText
 
 """
 
-mtext_subclass = DefSubclass('AcDbMText', {
-    'insert': DXFAttr(10, xtype='Point3D'),
-    'char_height': DXFAttr(40),  # nominal (initial) text height
-    'width': DXFAttr(41),  # reference column width
-    'attachment_point': DXFAttr(71),
-    # 1 = Top left; 2 = Top center; 3 = Top right
-    # 4 = Middle left; 5 = Middle center; 6 = Middle right
-    # 7 = Bottom left; 8 = Bottom center; 9 = Bottom right
-    'flow_direction': DXFAttr(72),
-    # 1 = Left to right
-    # 3 = Top to bottom
-    # 5 = By style (the flow direction is inherited from the associated text style)
-    'style': DXFAttr(7, default='STANDARD'),  # text style name
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-    'text_direction': DXFAttr(11, xtype='Point3D'),  # x-axis direction vector (in WCS)
-    # If *rotation* and *text_direction* are present, *text_direction* wins
-    'rect_width': DXFAttr(42),  # Horizontal width of the characters that make up the mtext entity.
-    # This value will always be equal to or less than the value of *width*, (read-only, ignored if supplied)
-    'rect_height': DXFAttr(43),  # vertical height of the mtext entity (read-only, ignored if supplied)
-    'rotation': DXFAttr(50, default=0.0),  # in degrees (circle=360 deg) -  error in DXF reference, which says radians
-    'line_spacing_style': DXFAttr(73),  # line spacing style (optional):
-    # 1 = At least (taller characters will override)
-    # 2 = Exact (taller characters will not override)
-    'line_spacing_factor': DXFAttr(44),  # line spacing factor (optional):
-    # Percentage of default (3-on-5) line spacing to be applied. Valid values
-    # range from 0.25 to 4.00
-})
-
 
 class MText(legacy.GraphicEntity):  # MTEXT will be extended in DXF version AC1021 (ACAD 2007)
     TEMPLATE = ClassifiedTags.from_text(_MTEXT_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, mtext_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        # AcDbMText
+        insert = DXFAttr(10, xtype='Point3D')
+        char_height = DXFAttr(40)   # nominal (initial) text height
+        width = DXFAttr(41)   # reference column width
+        attachment_point = DXFAttr(71)
+        # 1 = Top left; 2 = Top center; 3 = Top right
+        # 4 = Middle left; 5 = Middle center; 6 = Middle right
+        # 7 = Bottom left; 8 = Bottom center; 9 = Bottom right
+        flow_direction = DXFAttr(72)
+        # 1 = Left to right
+        # 3 = Top to bottom
+        # 5 = By style (the flow direction is inherited from the associated text style)
+        style = DXFAttr(7, default='STANDARD')   # text style name
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
+        text_direction = DXFAttr(11, xtype='Point3D')   # x-axis direction vector (in WCS)
+        # If *rotation* and *text_direction* are present, *text_direction* wins
+        rect_width = DXFAttr(42)   # Horizontal width of the characters that make up the mtext entity.
+        # This value will always be equal to or less than the value of *width*, (read-only, ignored if supplied)
+        rect_height = DXFAttr(43)   # vertical height of the mtext entity (read-only, ignored if supplied)
+        rotation = DXFAttr(50, default=0.0)   # in degrees (circle=360 deg) -  error in DXF reference, which says radians
+        line_spacing_style = DXFAttr(73)   # line spacing style (optional):
+        # 1 = At least (taller characters will override)
+        # 2 = Exact (taller characters will not override)
+        line_spacing_factor = DXFAttr(44)   # line spacing factor (optional):
+        # Percentage of default (3-on-5) line spacing to be applied. Valid values
+        # range from 0.25 to 4.00
 
     def get_text(self):
         tags = self.tags.get_subclass('AcDbMText')
@@ -1323,22 +1291,20 @@ NAME
 0.0
 """
 
-shape_subclass = DefSubclass('AcDbShape', {
-    'thickness': DXFAttr(39, default=0.0),
-    'insert': DXFAttr(10, xtype='Point2D/3D'),
-    'size': DXFAttr(40),
-    'name': DXFAttr(2),
-    'rotation': DXFAttr(50, default=0.0),
-    'xscale': DXFAttr(41, default=1.0),
-    'oblique': DXFAttr(51, default=0.0),
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-})
-
 
 # SHAPE is not tested with real world DXF drawings!
 class Shape(legacy.GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_SHAPE_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, shape_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        # AcDbShape
+        thickness = DXFAttr(39, default=0.0)
+        insert = DXFAttr(10, xtype='Point2D/3D')
+        size = DXFAttr(40)
+        name = DXFAttr(2)
+        rotation = DXFAttr(50, default=0.0)
+        xscale = DXFAttr(41, default=1.0)
+        oblique = DXFAttr(51, default=0.0)
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
 
 
 
@@ -1365,24 +1331,23 @@ AcDbSpline
  74
 0
 """
-spline_subclass = DefSubclass('AcDbSpline', {
-    'flags': DXFAttr(70, default=0),
-    'degree': DXFAttr(71),
-    'n_knots': DXFAttr(72),
-    'n_control_points': DXFAttr(73),
-    'n_fit_points': DXFAttr(74),
-    'knot_tolerance': DXFAttr(42, default=1e-10),
-    'control_point_tolerance': DXFAttr(43, default=1e-10),
-    'fit_tolerance': DXFAttr(44, default=1e-10),
-    'start_tangent': DXFAttr(12, xtype='Point3D'),
-    'end_tangent': DXFAttr(13, xtype='Point3D'),
-    'extrusion': DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0)),
-})
 
 
 class Spline(legacy.GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_SPLINE_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, spline_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        """AcDbSpline"""
+        flags = DXFAttr(70, default=0)
+        degree = DXFAttr(71)
+        n_knots = DXFAttr(72)
+        n_control_points = DXFAttr(73)
+        n_fit_points = DXFAttr(74)
+        knot_tolerance = DXFAttr(42, default=1e-10)
+        control_point_tolerance = DXFAttr(43, default=1e-10)
+        fit_tolerance = DXFAttr(44, default=1e-10)
+        start_tangent = DXFAttr(12, xtype='Point3D')
+        end_tangent = DXFAttr(13, xtype='Point3D')
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))
 
     @property
     def AcDbSpline(self):
@@ -1492,14 +1457,12 @@ AcDbModelerGeometry
 1
 """
 
-modeler_geometry_subclass = DefSubclass('AcDbModelerGeometry', {
-    'version': DXFAttr(70, default=1),
-})
-
 
 class Body(legacy.GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_BODY_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, modeler_geometry_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        """AcDbModelerGeometry"""
+        version = DXFAttr(70, default=1)
 
     def get_acis_data(self):
         modeler_geometry = self.tags.subclasses[2]
@@ -1561,12 +1524,9 @@ AcDb3dSolid
 
 class Solid3d(Body):
     TEMPLATE = ClassifiedTags.from_text(_3DSOLID_TPL)
-    DXFATTRIBS = DXFAttributes(
-        none_subclass,
-        entity_subclass,
-        modeler_geometry_subclass,
-        DefSubclass('AcDb3dSolid', {'history': DXFAttr(350, default=0)})
-    )
+    class DXFATTRIBS(Body.DXFATTRIBS):
+        """AcDb3dSolid"""
+        history = DXFAttr(350, default=0)
 
 _MESH_TPL = """  0
 MESH
@@ -1596,16 +1556,14 @@ AcDbSubDMesh
 0
 """
 
-mesh_subclass = DefSubclass('AcDbSubDMesh', {
-    'version': DXFAttr(71),
-    'blend_crease': DXFAttr(72),  # 0 = off, 1 = on
-    'subdivision_levels': DXFAttr(91),  # int >= 0
-})
-
 
 class Mesh(legacy.GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_MESH_TPL)
-    DXFATTRIBS = DXFAttributes(none_subclass, entity_subclass, mesh_subclass)
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        """AcDbSubDMesh"""
+        version = DXFAttr(71)
+        blend_crease = DXFAttr(72)   # 0 = off, 1 = on
+        subdivision_levels = DXFAttr(91)   # int >= 0
 
     @property
     def AcDbSubDMesh(self):

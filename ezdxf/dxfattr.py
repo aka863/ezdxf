@@ -6,8 +6,6 @@ __author__ = "mozman <mozman@gmx.at>"
 
 from collections import namedtuple
 
-_DXFAttr = namedtuple('DXFAttr', 'code xtype default dxfversion')
-DXFAttr3 = namedtuple('DXFAttr3', 'code xtype subclass default dxfversion')
 DefSubclass = namedtuple('DefSubclass', 'name attribs')
 
 
@@ -15,41 +13,50 @@ DefSubclass = namedtuple('DefSubclass', 'name attribs')
 # dxffactory AC1009 - manages just DXF version AC1009, but dxffactory AC1015 manages the DXF version AC1015 and all
 # later DXF versions! Set *dxfversion* to 'AC1018' and this attribute can only be set in drawings with DXF version
 # AC1018 or later.
-def DXFAttr(code, xtype=None, default=None, dxfversion=None):
-    return _DXFAttr(code, xtype, default, dxfversion)
+class DXFAttr(object):
+    def __init__(self, code, xtype=None, default=None, dxfversion=None):
+        self.code = code
+        self.xtype = xtype
+        self.default = default
+        self.dxfversion = dxfversion
 
 
-class DXFAttributes:
-    def __init__(self, *subclassdefs):
-        self._subclasses = []
-        self._attribs = {}
-        for subclass in subclassdefs:
-            self.add_subclass(subclass)
-            
-    def add_subclass(self, subclass):
-        subclass_index = len(self._subclasses)
-        self._subclasses.append(subclass)
-        self._add_subclass_attribs(subclass, subclass_index)
-        
-    def _add_subclass_attribs(self, subclass, subclass_index):
-        for name, dxfattrib in subclass.attribs.items():
-            self._attribs[name] = DXFAttr3(dxfattrib.code, dxfattrib.xtype, subclass_index, dxfattrib.default,
-                                           dxfattrib.dxfversion)
+class SubClassedDXFAttr(DXFAttr):
+    def __init__(self, code, xtype, subclass, default, dxfversion):
+        self.subclass = subclass
+        super(SubClassedDXFAttr, self).__init__(code, xtype, default, dxfversion)
 
+
+class DXFMeta(type):
+    def __new__(cls, name, parents, dct):
+        dct["_parent"] = []
+
+        def add_parent(parent):
+            dct["_parent"].append(parent)
+            #for key, value in parent.items():
+            #    dct[key] = value
+
+        for p in parents:
+            add_parent(p)
+        print("jo", name)
+        res = super(DXFMeta, cls).__new__(cls, name, parents, dct)
+        print("meta", res)
+        return res
+
+
+class DXFAttributes(metaclass=DXFMeta):
+    @classmethod
     def __getitem__(self, name):
-        return self._attribs[name]
+        return getattr(self, name)
 
     def __contains__(self, name):
-        return name in self._attribs
+        return name in self.keys()
 
-    def get(self, key, default=None):
-        return self._attribs.get(key, default)
+    @classmethod
+    def keys(cls):
+        return [key for key in dir(cls) if not key.startswith("_")]
 
-    def keys(self):
-        return self._attribs.keys()
 
-    def items(self):
-        return self._attribs.items()
-
-    def subclasses(self):
-        return iter(self._subclasses)
+    @classmethod
+    def items(cls):
+        return [(key, getattr(cls, key)) for key in cls.keys()]

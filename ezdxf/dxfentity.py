@@ -11,40 +11,31 @@ from .const import DXFStructureError
 
 
 class DXFNamespace(object):
-    """ Provides the dxf namespace for GenericWrapper.
     """
-    __slots__ = ('_setter', '_getter', '_deleter')
+    Provides a dxf namespace Proxy (as a instance-property)
+    """
+    def __get__(self, instance, owner):
+        class Proxy():
+            def __getattr__(self, item):
+                return instance.get_dxf_attrib(item)
 
-    def __init__(self, wrapper):
-        # DXFNamespace.__setattr__ can not set _getter and _setter
-        super(DXFNamespace, self).__setattr__('_getter', wrapper.get_dxf_attrib)
-        super(DXFNamespace, self).__setattr__('_setter', wrapper.set_dxf_attrib)
-        super(DXFNamespace, self).__setattr__('_deleter', wrapper.del_dxf_attrib)
+            def __setattr__(self, key, value):
+                return instance.set_dxf_attrib(key, value)
 
-    def __getattr__(self, attrib):
-        """Returns value of DXF attribute *attrib*. usage: value = DXFEntity.dxf.attrib
-        """
-        return self._getter(attrib)
+            def __delattr__(self, item):
+                return instance.del_dxf_attrib(item)
 
-    def __setattr__(self, attrib, value):
-        """Set DXF attribute *attrib* to *value.  usage: DXFEntity.dxf.attrib = value
-        """
-        self._setter(attrib, value)
-
-    def __delattr__(self, attrib):
-        """Remove DXF attribute *attrib*.  usage: del DXFEntity.dxf.attrib
-        """
-        self._deleter(attrib)
+        return Proxy()
 
 
 # noinspection PyUnresolvedReferences
 class DXFEntity(object):
     TEMPLATE = None
     DXFATTRIBS = {}
+    dxf = DXFNamespace()  # all DXF attributes are accessible by the dxf attribute, like entity.dxf.handle
 
     def __init__(self, tags, drawing=None):
         self.tags = tags
-        self.dxf = DXFNamespace(self)  # all DXF attributes are accessible by the dxf attribute, like entity.dxf.handle
         self.drawing = drawing
 
     @property
@@ -87,7 +78,7 @@ class DXFEntity(object):
         """ Returns *True* if DXF attrib *key* is supported by this entity else False. Does not grant that attrib
         *key* really exists.
         """
-        dxfattr = self.DXFATTRIBS.get(key, None)
+        dxfattr = getattr(self.DXFATTRIBS, key, None)
         if dxfattr is None:
             return False
         if dxfattr.dxfversion is None:
@@ -109,7 +100,8 @@ class DXFEntity(object):
 
     def _get_dxfattr_definition(self, key):
         try:
-            return self.DXFATTRIBS[key]
+            return getattr(self.DXFATTRIBS, key)
+            #return self.DXFATTRIBS[key]
         except KeyError:
             raise AttributeError(key)
 

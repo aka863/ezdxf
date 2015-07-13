@@ -97,13 +97,6 @@ class ClassesSection(AbstractSection):
             yield self.dxffactory.wrap_handle(handle)
 
 
-class ObjectsSection(ClassesSection):
-    name = 'objects'
-
-    def roothandle(self):
-        return self._entity_space[0]
-
-
 class EntitySection(AbstractSection):
     name = 'entities'
 

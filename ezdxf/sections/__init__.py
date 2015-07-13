@@ -9,7 +9,8 @@ from ezdxf.defaultchunk import DefaultChunk, iter_chunks, CompressedDefaultChunk
 from ezdxf.sections.header import HeaderSection
 from ezdxf.sections.tables import TablesSection
 from ezdxf.sections.blocks import BlocksSection
-from ezdxf.sections.entity import EntitySection, ClassesSection, ObjectsSection
+from ezdxf.sections.entity import EntitySection, ClassesSection
+from ezdxf.sections.objects import ObjectsSection
 from ezdxf.options import options
 
 
