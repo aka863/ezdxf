@@ -10,10 +10,10 @@ import io
 
 from . import database
 from .tags import TagIterator, DXFTag
-from .dxffactory import dxffactory
+from ezdxf.entities.dxffactory import get_dxffactory
 from ezdxf.templates import TemplateFinder
 from .options import options
-from .codepage import tocodepage, toencoding
+from ezdxf.io.codepage import tocodepage, toencoding
 from ezdxf.sections import Sections
 from .juliandate import juliandate
 
@@ -32,7 +32,7 @@ class Drawing(object):
         self.dxfversion = 'AC1009'  # readonly
         self.encoding = 'cp1252'  # read/write
         self.filename = None  # read/write
-        self.entitydb = database.factory(debug=options.debug)
+        self.entitydb = database.EntityDB()
         self.sections = Sections(tagreader, self)
         if self.dxfversion > 'AC1009':
             self.rootdict = get_rootdict()
@@ -64,7 +64,7 @@ class Drawing(object):
         self._handles.reset(seed)
         codepage = header.get('$DWGCODEPAGE', 'ANSI_1252')
         self.encoding = toencoding(codepage)
-        self.dxffactory = dxffactory(self)
+        self.dxffactory = get_dxffactory(self)
 
     @property
     def is_binary_data_compressed(self):

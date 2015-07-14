@@ -3,17 +3,11 @@
 # Copyright (C) 2011, Manfred Moitzi
 # License: MIT License
 from __future__ import unicode_literals
+from ezdxf import options
+
 __author__ = "mozman <mozman@gmx.at>"
 
-from collections import OrderedDict
-
-from .binarydata import compress_binary_data
-
-
-def factory(debug=False):
-    return DebugDB() if debug else EntityDB()
-
-from .handle import HandleGenerator
+from ezdxf.io.binarydata import compress_binary_data
 
 
 class EntityDB(object):
@@ -34,6 +28,7 @@ class EntityDB(object):
     """
     def __init__(self):
         self._database = {}
+        self._collisions = {}
         self.handles = HandleGenerator()
 
     def __delitem__(self, key):
@@ -49,6 +44,9 @@ class EntityDB(object):
             return default
 
     def __setitem__(self, handle, entity):
+        if options.debug and handle in self:
+            collisions = self._collisions.setdefault(handle, [])
+            collisions.append(self[handle])
         self._database[handle] = entity
 
     def __contains__(self, handle):
@@ -94,23 +92,6 @@ class EntityDB(object):
         for tags in self.values():
             compress_binary_data(tags)
 
-
-class DebugDB(EntityDB):
-    TAGFMT = "(%d, %s)"
-
-    def __init__(self):
-        super(DebugDB, self).__init__()
-        self._database = OrderedDict()
-        self._collisions = {}
-        self._stream = None
-        self._verbose = True
-
-    def __setitem__(self, handle, entity):
-        if handle in self:
-            collisions = self._collisions.setdefault(handle, [])
-            collisions.append(self[handle])
-        super(DebugDB, self).__setitem__(handle, entity)
-
     def _setparams(self, stream, verbose):
         self._stream = stream
         self._verbose = verbose
@@ -144,7 +125,7 @@ class DebugDB(EntityDB):
         for handle in self._collisions:
             dump_entry(handle)
 
-    def dumpcontent(self, stream, verbose=True):
+    def dump(self, stream, verbose=True):
         def dump_entry(handle):
             self.println()
             self.println("Handle: %s" % handle)
@@ -154,3 +135,18 @@ class DebugDB(EntityDB):
         self.println("Database contains %d entries." % len(self))
         for handle in self:
             dump_entry(handle)
+
+
+class HandleGenerator(object):
+    def __init__(self, start_value='1'):
+        self._handle = int(start_value, 16)
+    reset = __init__
+
+    def __str__(self):
+        return "%X" % self._handle
+
+    def next(self):
+        next_handle = self.__str__()
+        self._handle += 1
+        return next_handle
+    __next__ = next

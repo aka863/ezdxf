@@ -8,7 +8,7 @@ __author__ = "mozman <mozman@gmx.at>"
 from collections import OrderedDict
 
 from ezdxf.c23 import ustr
-from ezdxf.dxftag import strtag
+from ezdxf.tags.dxftag import strtag
 from ezdxf.tags import TagGroups, Tags, DXFStructureError
 
 MIN_HEADER_TEXT = """  0

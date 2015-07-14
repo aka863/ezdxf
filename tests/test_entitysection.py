@@ -11,7 +11,7 @@ import unittest
 from io import StringIO
 
 import ezdxf
-from ezdxf.testtools import DrawingProxy, normlines, Tags
+from tests.tools import DrawingProxy, normlines, Tags
 from ezdxf.sections.entity import EntitySection
 
 

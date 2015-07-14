@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 import unittest
 from io import StringIO
 
-from ezdxf.testtools import DrawingProxy, Tags, normlines
+from tests.tools import DrawingProxy, Tags, normlines
 from ezdxf.sections.objects import ObjectsSection
 
 

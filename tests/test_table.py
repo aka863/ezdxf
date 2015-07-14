@@ -10,9 +10,9 @@ from __future__ import unicode_literals
 import unittest
 from io import StringIO
 
-from ezdxf.testtools import DrawingProxy, normlines, Tags
+from tests.tools import DrawingProxy, normlines, Tags
+from ezdxf.entities.table import Table
 
-from ezdxf.table import Table
 
 AC1009TABLE = """  0
 TABLE

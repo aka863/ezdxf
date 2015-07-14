@@ -8,7 +8,7 @@ __author__ = "mozman <mozman@gmx.at>"
 from itertools import islice
 
 from ezdxf.tags import TagGroups, DXFStructureError
-from ezdxf.classifiedtags import ClassifiedTags, get_tags_linker
+from ezdxf.tags.classifiedtags import ClassifiedTags, get_tags_linker
 from ezdxf import const
 
 

@@ -11,11 +11,13 @@ import os
 import io
 
 from ezdxf import readfile, options
-from ezdxf.dxftag import tag_type, point_tuple, is_point_code, internal_type
+from ezdxf.tags.dxftag import tag_type, point_tuple, is_point_code, internal_type
 from ezdxf.c23 import escape, ustr
-from ezdxf.reflinks import get_reference_link
+from ezdxf.dxf2html.reflinks import get_reference_link
 from ezdxf.sections import KNOWN_SECTIONS
 from ezdxf.tags import CompressedTags
+
+
 
 # Handle definitions
 

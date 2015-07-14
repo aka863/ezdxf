@@ -9,9 +9,9 @@ from __future__ import unicode_literals
 
 import unittest
 
-from ezdxf.dxffactory.modern.tableentries import Layer, Linetype, Style
-from ezdxf.dxffactory.modern.tableentries import AppID, BlockRecord, DimStyle
-from ezdxf.dxffactory.modern.tableentries import UCS, View, Viewport
+from ezdxf.entities.modern.tableentries import Layer, Linetype, Style
+from ezdxf.entities.modern.tableentries import AppID, BlockRecord, DimStyle
+from ezdxf.entities.modern.tableentries import UCS, View, Viewport
 
 
 class DXFFactory:

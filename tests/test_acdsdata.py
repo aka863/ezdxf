@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 
 import unittest
 
-from ezdxf.testtools import DrawingProxy
+from tests.tools import DrawingProxy
 from ezdxf.tags import Tags
 from ezdxf.sections.acdsdata import AcDsDataSection
 

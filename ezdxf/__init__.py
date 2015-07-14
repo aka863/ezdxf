@@ -16,11 +16,11 @@ if sys.version_info[:2] < (2, 7):
 import io
 
 from .options import options  # example: ezdxf.options.template_dir = 'c:\templates'
-from .tags import dxf_info
+from ezdxf.tags import dxf_info
 from .tags import TagIterator
 from .importer import Importer
 from .const import DXFStructureError, DXFVersionError
-from .zipmanager import ctxZipReader
+from ezdxf.io.zipmanager import ctxZipReader
 
 def new(dxfversion='AC1009'):
     """Create a new DXF drawing.

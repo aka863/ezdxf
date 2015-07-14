@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from ezdxf.defaultchunk import DefaultChunk, iter_chunks, CompressedDefaultChunk
+from ezdxf.sections.defaultchunk import DefaultChunk, iter_chunks, CompressedDefaultChunk
 from ezdxf.sections.header import HeaderSection
 from ezdxf.sections.tables import TablesSection
 from ezdxf.sections.blocks import BlocksSection
@@ -13,8 +13,26 @@ from ezdxf.sections.entity import EntitySection, ClassesSection
 from ezdxf.sections.objects import ObjectsSection
 from ezdxf.options import options
 
+SECTION_MAP = {
+    'CLASSES': ClassesSection,
+    'TABLES': TablesSection,
+    'BLOCKS': BlocksSection,
+    'ENTITIES': EntitySection,
+    'OBJECTS': ObjectsSection,
+    }
+
+KNOWN_SECTIONS = ('header', 'classes', 'tables', 'blocks', 'entities', 'objects', 'thumbnailimage', 'acdsdata')
+
+
+def get_section_class(name):
+    default_class = CompressedDefaultChunk if options.compress_default_chunks else DefaultChunk
+    return SECTION_MAP.get(name, default_class)
+
 
 class Sections(object):
+    """
+    Sections Registry
+    """
     def __init__(self, tagreader, drawing):
         self._sections = {}
         self._setup_sections(tagreader, drawing)
@@ -68,9 +86,6 @@ class Sections(object):
         return list(self._sections.keys())
 
     def write(self, stream):
-        def write_eof():
-            stream.write('  0\nEOF\n')
-
         write_order = list(KNOWN_SECTIONS)
 
         unknown_sections = frozenset(self._sections.keys()) - frozenset(KNOWN_SECTIONS)
@@ -86,24 +101,14 @@ class Sections(object):
                 written_sections.append(section.name)
 
         options.logger.debug("sections written: {}".format(written_sections))
-        write_eof()
+        stream.write('  0\nEOF\n')
 
     def delete_section(self, name):
-        """ Delete a complete section, please delete only unnecessary sections like 'THUMBNAILIMAGE' or 'ACDSDATA'.
+        """
+        Delete a complete section, please delete only unnecessary sections like 'THUMBNAILIMAGE' or 'ACDSDATA'.
         """
         del self._sections[name.lower()]
 
-SECTION_MAP = {
-    'CLASSES': ClassesSection,
-    'TABLES': TablesSection,
-    'BLOCKS': BlocksSection,
-    'ENTITIES': EntitySection,
-    'OBJECTS': ObjectsSection,
-    }
-
-KNOWN_SECTIONS = ('header', 'classes', 'tables', 'blocks', 'entities', 'objects', 'thumbnailimage', 'acdsdata')
 
 
-def get_section_class(name):
-    default_class = CompressedDefaultChunk if options.compress_default_chunks else DefaultChunk
-    return SECTION_MAP.get(name, default_class)
+

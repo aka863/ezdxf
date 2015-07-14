@@ -10,8 +10,7 @@ from __future__ import unicode_literals
 import unittest
 
 import ezdxf
-
-from ezdxf.testtools import DrawingProxy
+from tests.tools import DrawingProxy
 
 def getattributes(obj):
     return ( attr for attr in dir(obj) if not attr.startswith('_DrawingProxy__') )
@@ -24,7 +23,7 @@ class TestDrawingProxy(unittest.TestCase):
             if not hasattr(dwg, attr):
                 raise Exception("attribute '%s' of DrawingProxy() does not exist in Drawing() class" % attr)
 
-from ezdxf.tools import safe_3D_point
+from ezdxf.entities.tools import safe_3D_point
 
 
 class TestSafe3DPoint(unittest.TestCase):

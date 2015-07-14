@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 
 import unittest
 
-from ezdxf.dxffactory.legacy.layouts import BaseLayout
+from ezdxf.entities.legacy.layouts import BaseLayout
 
 
 class DXFNameSpace:

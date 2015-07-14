@@ -10,8 +10,8 @@ from __future__ import unicode_literals
 import unittest
 
 import ezdxf
-from ezdxf.dxffactory.modern.graphics import Mesh
-from ezdxf.classifiedtags import ClassifiedTags
+from ezdxf.entities.modern.graphics import Mesh
+from ezdxf.tags.classifiedtags import ClassifiedTags
 
 DWG = ezdxf.new('AC1015')
 

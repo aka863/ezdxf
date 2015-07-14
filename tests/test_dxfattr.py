@@ -7,9 +7,9 @@ from __future__ import unicode_literals
 
 import unittest
 
-from ezdxf.dxfentity import DXFEntity
-from ezdxf.classifiedtags import ClassifiedTags
-from ezdxf.dxfattr import DXFAttr, DXFAttributes
+from ezdxf.entities.dxfentity import DXFEntity
+from ezdxf.tags.classifiedtags import ClassifiedTags
+from ezdxf.tags.dxfattr import DXFAttr, DXFAttributes
 
 XTEMPLATE = """  0
 LINE

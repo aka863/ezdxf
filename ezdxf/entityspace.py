@@ -126,7 +126,8 @@ class LayoutSpaces(object):
         entity_space.store_tags(tags)
 
     def write(self, stream, first_key=None):
-        """ Write all entity spaces to *stream*.
+        """
+        Write all entity spaces to *stream*.
 
         If *first_key* is not *None*, entity space *first_key* will be written first.
         """
@@ -140,7 +141,8 @@ class LayoutSpaces(object):
             entity_space.write(stream)
 
     def delete_entity(self, entity):
-        """ Delete *entity* from associated layout entity space.
+        """
+        Delete *entity* from associated layout entity space.
         Type of *entity* has to be DXFEntity() or inherited.
         """
         key = self._get_key(entity.tags)
@@ -159,7 +161,8 @@ class LayoutSpaces(object):
         del self._layout_spaces[key]
 
     def delete_all_entities(self):
-        """ Delete all entities from all layout entity spaces.
+        """
+        Delete all entities from all layout entity spaces.
         """
         # Do not delete the entity space objects itself, just remove all entities from all entity spaces.
         for entity_space in self._layout_spaces.values():

@@ -5,8 +5,8 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from ezdxf.defaultchunk import iter_chunks
-from ezdxf.table import GenericTable, Table, ViewportTable
+from ezdxf.sections.defaultchunk import iter_chunks
+from ezdxf.entities.table import GenericTable, Table, ViewportTable
 from ezdxf.tags import DXFStructureError, Tags
 from ezdxf.options import options
 

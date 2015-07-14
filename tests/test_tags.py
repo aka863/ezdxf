@@ -11,7 +11,8 @@ from io import StringIO
 
 from ezdxf.c23 import ustr
 from ezdxf.tags import StringIterator, Tags, dxf_info
-from ezdxf.dxftag import tag_type, point_tuple, strtag
+from ezdxf.tags.dxftag import tag_type, point_tuple, strtag
+
 
 TEST_TAGREADER = """  0
 SECTION
