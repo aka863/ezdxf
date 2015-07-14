@@ -8,7 +8,7 @@ __author__ = "mozman <mozman@gmx.at>"
 
 from ezdxf.tags import DXFTag
 from ezdxf.classifiedtags import ClassifiedTags
-from ezdxf.dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from ezdxf.dxfattr import DXFAttr, DXFAttributes
 from ezdxf.dxfentity import DXFEntity
 
 ENTRY_NAME_CODE = 3
@@ -127,10 +127,12 @@ class DXFDictionary(DXFEntity):
 
 
 class DXFDictionaryWithDefault(DXFDictionary):
-    class DXFATTRIBS(BaseAttribs):
+    class _DXFATTRIBS(BaseAttribs):
         """AcDbDictionary"""
         hard_owned = DXFAttr(280)
         cloning = DXFAttr(281)
+
+    class DXFATTRIBS(_DXFATTRIBS):
         # AcDbDictionaryWithDefault
         default = DXFAttr(340)
 

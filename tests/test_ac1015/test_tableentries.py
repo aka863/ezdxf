@@ -137,6 +137,7 @@ class TestDimstyle(unittest.TestCase):
         self.assertEqual('DIMSTYLE1', self.dimstyle.dxf.name)
 
     def test_handle_code(self):
+        print(self.dimstyle.tags.subclasses)
         handle = self.dimstyle.tags.noclass.get_value(105)
         self.assertEqual('FFFF', handle)
 

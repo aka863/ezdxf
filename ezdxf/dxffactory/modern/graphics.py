@@ -34,13 +34,12 @@ from ezdxf.dxffactory.legacy import graphics as legacy
 from ezdxf.tags import DXFTag, Tags
 from ezdxf.dxftag import convert_tags_to_text_lines, convert_text_lines_to_tags
 from ezdxf.classifiedtags import ClassifiedTags
-from ezdxf.dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from ezdxf.dxfattr import DXFAttr, DXFAttributes
 from ezdxf import const
 from ezdxf.facemixins import PolyfaceMixin, PolymeshMixin
 from ezdxf.tools import safe_3D_point
 from ezdxf import crypt
 from ezdxf.const import DXFStructureError
-
 
 class BaseAttribs(DXFAttributes):
     handle = DXFAttr(5)
@@ -123,8 +122,6 @@ AcDbPoint
  30
 0.0
 """
-point_subclass = DefSubclass('AcDbPoint', {
-})
 
 
 class Point(legacy.Point):
@@ -200,6 +197,8 @@ class Arc(legacy.Arc):
     TEMPLATE = ClassifiedTags.from_text(_ARC_TPL)
 
     class DXFATTRIBS(Circle.DXFATTRIBS):
+        class Meta:
+            add_subclass = False
         start_angle = DXFAttr(50)
         end_angle = DXFAttr(51)
 
@@ -497,11 +496,13 @@ AcDb2dVertex
 
 EMPTY_VERTEX_SUBCLASS = Tags()
 
+class AcDbVertex(GraphicEntity.DXFATTRIBS):
+    pass
 
 class Vertex(legacy.Vertex):
     TEMPLATE = ClassifiedTags.from_text(_VERTEX_TPL)
 
-    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+    class DXFATTRIBS(AcDbVertex):
         location = DXFAttr(10, xtype='Point2D/3D')
         start_width = DXFAttr(40, default=0.0)
         end_width = DXFAttr(41, default=0.0)
@@ -720,13 +721,13 @@ BLOCKNAME
   1
 
 """
-
+class AcDbEntry(BaseAttribs):
+    layer = DXFAttr(8, default='0')
 
 class Block(legacy.GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_BLOCK_TPL)
 
-    class DXFATTRIBS(BaseAttribs):
-        layer = DXFAttr(8, default='0')
+    class DXFATTRIBS(AcDbEntry):
         name = DXFAttr(2)
         name2 = DXFAttr(3)
         description = DXFAttr(4)
@@ -785,9 +786,6 @@ BLOCKNAME
  50
 0.0
 """
-
-insert_subclass = DefSubclass('AcDbBlockReference', {
-})
 
 
 class Insert(legacy.Insert):
@@ -990,9 +988,6 @@ AcDbEllipse
  42
 6.283185307179586
 """
-
-ellipse_subclass = DefSubclass('AcDbEllipse', {
-})
 
 
 class Ellipse(legacy.GraphicEntity, legacy.ColorMixin):

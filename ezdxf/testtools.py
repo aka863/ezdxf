@@ -10,7 +10,7 @@ from .dxffactory import dxffactory
 from .tags import StringIterator
 from .tags import Tags, TagGroups, DXFStructureError, DXFTag
 from .classifiedtags import ClassifiedTags
-from .dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from .dxfattr import DXFAttr, DXFAttributes
 
 from .drawing import Drawing
 from .database import EntityDB

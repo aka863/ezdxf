@@ -8,7 +8,7 @@ __author__ = "mozman <mozman@gmx.at>"
 from ezdxf.dxfentity import DXFEntity
 from ezdxf.tags import DXFTag
 from ezdxf.classifiedtags import ClassifiedTags
-from ezdxf.dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from ezdxf.dxfattr import DXFAttr, DXFAttributes
 
 _LAYERTEMPLATE = """  0
 LAYER

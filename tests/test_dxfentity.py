@@ -9,21 +9,20 @@ from __future__ import unicode_literals
 
 import unittest
 
-from ezdxf.testtools import ClassifiedTags, DXFStructureError, DXFAttr, DXFAttributes, DefSubclass, DrawingProxy
+from ezdxf.testtools import ClassifiedTags, DXFStructureError, DXFAttr, DXFAttributes, DrawingProxy
 from ezdxf.dxfentity import DXFEntity
 
 DWG = DrawingProxy('AC1009')
 
 
 class PointAccessor(DXFEntity):
-    DXFATTRIBS = DXFAttributes(DefSubclass(None, {
-        'point': DXFAttr(10, 'Point3D'),
-        'flat': DXFAttr(11, 'Point2D'),
-        'xp': DXFAttr(12, 'Point3D'),
-        'flex': DXFAttr(13, 'Point2D/3D'),
-        'flags': DXFAttr(70),
-        'just_AC1015': DXFAttr(71, default=777, dxfversion='AC1015'),
-    }))
+    class DXFATTRIBS(DXFAttributes):
+        point = DXFAttr(10, 'Point3D')
+        flat = DXFAttr(11, 'Point2D')
+        xp = DXFAttr(12, 'Point3D')
+        flex = DXFAttr(13, 'Point2D/3D')
+        flags = DXFAttr(70)
+        just_AC1015 = DXFAttr(71, default=777, dxfversion='AC1015')
 
     def __init__(self, tags):
         super(PointAccessor, self).__init__(tags, drawing=DWG)

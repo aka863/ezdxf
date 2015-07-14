@@ -9,9 +9,12 @@ from ezdxf.tags import DXFTag
 from ezdxf.classifiedtags import ClassifiedTags
 from ezdxf.dxffactory.legacy import tableentries as legacy
 from ezdxf.dxfentity import DXFEntity
-from ezdxf.dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from ezdxf.dxfattr import DXFAttr, DXFAttributes
 
-from ezdxf.dxffactory.modern.graphics import BaseAttribs
+from ezdxf.dxffactory.modern.graphics import BaseAttribs as Base
+
+class BaseAttribs(Base):
+    pass
 
 _LAYERTEMPLATE = """  0
 LAYER
@@ -44,13 +47,13 @@ class Layer(legacy.Layer):
     TEMPLATE = ClassifiedTags.from_text(_LAYERTEMPLATE)
 
     class DXFATTRIBS(BaseAttribs):
-        name = DXFAttr(2),  # layer name
-        flags = DXFAttr(70),
-        color = DXFAttr(62),  # dxf color index
-        linetype = DXFAttr(6),  # linetype name
-        plot = DXFAttr(290),  # don't plot this layer if 0 else 1
-        line_weight = DXFAttr(370),  # enum value???
-        plot_style_name = DXFAttr(390),  # handle to PlotStyleName object
+        name = DXFAttr(2)  # layer name
+        flags = DXFAttr(70)
+        color = DXFAttr(62)  # dxf color index
+        linetype = DXFAttr(6)  # linetype name
+        plot = DXFAttr(290)  # don't plot this layer if 0 else 1
+        line_weight = DXFAttr(370)  # enum value???
+        plot_style_name = DXFAttr(390)  # handle to PlotStyleName object
 
     @classmethod
     def new(cls, handle, dxfattribs=None, dxffactory=None):
@@ -252,11 +255,19 @@ STANDARD
 """
 
 
+class Handle105(DXFAttributes):
+    handle = DXFAttr(105)
+    owner = DXFAttr(330)
+
+
+class AcDbSymbolTableRecord(Handle105):
+    pass
+
+
 class DimStyle(legacy.DimStyle):
     TEMPLATE = ClassifiedTags.from_text(_DIMSTYLETEMPLATE)
 
-    class DXFATTRIBS(BaseAttribs):
-        handle = DXFAttr(105)  # overwrite
+    class DXFATTRIBS(AcDbSymbolTableRecord):
         name = DXFAttr(2)
         flags = DXFAttr(70)
         dimpost = DXFAttr(3)

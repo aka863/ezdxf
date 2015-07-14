@@ -101,7 +101,6 @@ class DXFEntity(object):
     def _get_dxfattr_definition(self, key):
         try:
             return getattr(self.DXFATTRIBS, key)
-            #return self.DXFATTRIBS[key]
         except KeyError:
             raise AttributeError(key)
 
@@ -118,7 +117,7 @@ class DXFEntity(object):
                 if result is not None:
                     return result
                 else:
-                    raise ValueError("DXFAttrib '%s' does not exist." % key)
+                    raise ValueError("DXFAttrib '%s' does not exist. (%s)" % (key, self))
             else:
                 return default
 

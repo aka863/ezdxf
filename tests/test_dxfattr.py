@@ -9,7 +9,7 @@ import unittest
 
 from ezdxf.dxfentity import DXFEntity
 from ezdxf.classifiedtags import ClassifiedTags
-from ezdxf.dxfattr import DXFAttr, DefSubclass, DXFAttributes
+from ezdxf.dxfattr import DXFAttr, DXFAttributes
 
 XTEMPLATE = """  0
 LINE
@@ -40,25 +40,25 @@ AcDbLine
 
 class AttributeChecker(DXFEntity):
     TEMPLATE = XTEMPLATE
-    DXFATTRIBS = DXFAttributes(
-        DefSubclass(None, {
-            'handle': DXFAttr(5),
-            'block_record': DXFAttr(330),
-        }),
-        DefSubclass('AcDbEntity', {
-            'paperspace': DXFAttr(67, default=0),
-            'layer': DXFAttr(8, default='0'),
-            'linetype': DXFAttr(6, default='BYLAYER'),
-            'ltscale': DXFAttr(48, default=1.0),
-            'invisible': DXFAttr(60, default=0),
-            'color': DXFAttr(62, default=256),
-        }),
-        DefSubclass('AcDbLine', {
-            'start': DXFAttr(10, 'Point2D/3D'),
-            'end': DXFAttr(11, 'Point2D/3D'),
-            'thickness': DXFAttr(39),
-            'extrusion': DXFAttr(210, 'Point3D'),
-        }))
+    class first(DXFAttributes):
+            handle = DXFAttr(5)
+            block_record = DXFAttr(330)
+
+    class second(first):
+        """AcDbEntity"""
+        paperspace = DXFAttr(67, default=0)
+        layer = DXFAttr(8, default='0')
+        linetype = DXFAttr(6, default='BYLAYER')
+        ltscale = DXFAttr(48, default=1.0)
+        invisible = DXFAttr(60, default=0)
+        color = DXFAttr(62, default=256)
+
+    class DXFATTRIBS(second):
+        """AcDbLine"""
+        start = DXFAttr(10, 'Point2D/3D')
+        end = DXFAttr(11, 'Point2D/3D')
+        thickness = DXFAttr(39)
+        extrusion = DXFAttr(210, 'Point3D')
 
 
 class TestDXFAttributes(unittest.TestCase):
@@ -66,8 +66,8 @@ class TestDXFAttributes(unittest.TestCase):
         self.dxfattribs = AttributeChecker.DXFATTRIBS
 
     def test_init(self):
-        count = len(list(self.dxfattribs.subclasses()))
-        self.assertEqual(3, count)
+        count = self.dxfattribs._subclass
+        self.assertEqual(2, count)
 
 
 class TestAttributeAccess(unittest.TestCase):

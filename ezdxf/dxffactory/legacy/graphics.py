@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
 from ezdxf.classifiedtags import ClassifiedTags
-from ezdxf.dxfattr import DXFAttr, DXFAttributes, DefSubclass
+from ezdxf.dxfattr import DXFAttr, DXFAttributes
 from ezdxf.dxfentity import DXFEntity
 from ezdxf import const
 from ezdxf.const import VERTEXNAMES
@@ -53,13 +53,13 @@ class GraphicEntity(DXFEntity):
      Wrapper for all unsupported graphic entities.
     """
     class DXFATTRIBS(DXFAttributes):
-        handle =DXFAttr(5),
-        layer =DXFAttr(8, default='0')  # layername as string
-        linetype =DXFAttr(6, default='BYLAYER')  # linetype as string, special names BYLAYER/BYBLOCK
-        color =DXFAttr(62, default=256)  # dxf color index, 0 .. BYBLOCK, 256 .. BYLAYER
-        thickness =DXFAttr(39, default=0)  # thickness of 2D elements
-        paperspace =DXFAttr(67, default=0)  # 0 .. modelspace, 1 .. paperspace
-        extrusion =DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))  # Z-axis of OCS (Object-Coordinate-System)
+        handle = DXFAttr(5)
+        layer = DXFAttr(8, default='0')  # layername as string
+        linetype = DXFAttr(6, default='BYLAYER')  # linetype as string, special names BYLAYER/BYBLOCK
+        color = DXFAttr(62, default=256)  # dxf color index, 0 .. BYBLOCK, 256 .. BYLAYER
+        thickness = DXFAttr(39, default=0)  # thickness of 2D elements
+        paperspace = DXFAttr(67, default=0)  # 0 .. modelspace, 1 .. paperspace
+        extrusion = DXFAttr(210, xtype='Point3D', default=(0.0, 0.0, 1.0))  # Z-axis of OCS (Object-Coordinate-System)
 
 _LINE_TPL = """  0
 LINE
@@ -81,14 +81,16 @@ LINE
 1.0
 """
 
-
 class Line(GraphicEntity, ColorMixin):
     TEMPLATE = ClassifiedTags.from_text(_LINE_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         start = DXFAttr(10, xtype='Point2D/3D')
         end = DXFAttr(11, xtype='Point2D/3D')
 
+print("LINE: ", Line.DXFATTRIBS.start.subclass)
 _POINT_TPL = """  0
 POINT
   5
@@ -108,6 +110,8 @@ class Point(GraphicEntity, ColorMixin):
     TEMPLATE = ClassifiedTags.from_text(_POINT_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         location = DXFAttr(10, xtype='Point2D/3D')
 
 
@@ -132,6 +136,8 @@ class Circle(GraphicEntity, ColorMixin):
     TEMPLATE = ClassifiedTags.from_text(_CIRCLE_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         center = DXFAttr(10, xtype='Point2D/3D')
         radius = DXFAttr(40)
 
@@ -160,6 +166,8 @@ class Arc(GraphicEntity, ColorMixin):
     TEMPLATE = ClassifiedTags.from_text(_ARC_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         center = DXFAttr(10, xtype='Point2D/3D')
         radius = DXFAttr(40)
         start_angle = DXFAttr(50)
@@ -202,6 +210,8 @@ class Trace(GraphicEntity, ColorMixin, QuadrilateralMixin):
     TEMPLATE = ClassifiedTags.from_text(_TRACE_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         vtx0 = DXFAttr(10, xtype='Point2D/3D')
         vtx1 = DXFAttr(11, xtype='Point2D/3D')
         vtx2 = DXFAttr(12, xtype='Point2D/3D')
@@ -216,6 +226,8 @@ class Face(Trace):
     TEMPLATE = ClassifiedTags.from_text(_TRACE_TPL.replace('TRACE', '3DFACE'))
 
     class DXFATTRIBS(Trace.DXFATTRIBS):
+        class META:
+            add_subclass = False
         invisible_edge = DXFAttr(70, default=0)
 
 _TEXT_TPL = """  0
@@ -259,7 +271,9 @@ STANDARD
 
 class Text(GraphicEntity, ColorMixin):
     TEMPLATE = ClassifiedTags.from_text(_TEXT_TPL)
-    class DXFATTRIBS(DXFAttributes):
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         insert = DXFAttr(10, xtype='Point2D/3D')
         height = DXFAttr(40)
         text = DXFAttr(1)
@@ -336,7 +350,9 @@ BLOCKNAME
 class Block(GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_BLOCK_TPL)
 
-    class DXFATTRIBS(DXFAttributes):
+    class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         name = DXFAttr(2)
         name2 = DXFAttr(3)
         flags = DXFAttr(70)
@@ -382,6 +398,8 @@ class Insert(GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_INSERT_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         attribs_follow = DXFAttr(66, default=0)
         name = DXFAttr(2)
         insert = DXFAttr(10, xtype='Point2D/3D')
@@ -542,6 +560,8 @@ STANDARD
 class Attdef(Text):
     TEMPLATE = ClassifiedTags.from_text(_ATTDEF_TPL)
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         insert = DXFAttr(10, xtype='Point2D/3D')
         height = DXFAttr(40)
         text = DXFAttr(1)
@@ -606,6 +626,8 @@ STANDARD
 class Attrib(Text):
     TEMPLATE = ClassifiedTags.from_text(_ATTRIB_TPL)
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         insert = DXFAttr(10, xtype='Point2D/3D')
         height = DXFAttr(40)
         text = DXFAttr(1)
@@ -644,6 +666,8 @@ class Polyline(GraphicEntity, ColorMixin):
     ANY3D = const.POLYLINE_3D_POLYLINE + const.POLYLINE_3D_POLYMESH + const.POLYLINE_POLYFACE
     TEMPLATE = ClassifiedTags.from_text(_POLYLINE_TPL)
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         elevation = DXFAttr(10, xtype='Point2D/3D')
         flags = DXFAttr(70, default=0)
         default_start_width = DXFAttr(40, default=0.0)
@@ -874,6 +898,8 @@ class Vertex(GraphicEntity, ColorMixin, QuadrilateralMixin):
     TEMPLATE = ClassifiedTags.from_text(_VERTEX_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         location = DXFAttr(10, xtype='Point2D/3D')
         start_width = DXFAttr(40, default=0.0)
         end_width = DXFAttr(41, default=0.0)
@@ -942,6 +968,8 @@ class Viewport(GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_VPORT_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         center = DXFAttr(10, xtype='Point2D/3D')  # center point of entity in paper space coordinates)
         width = DXFAttr(40)  # width in paper space units
         height = DXFAttr(41)  # height in paper space units
@@ -1013,6 +1041,8 @@ class Dimension(GraphicEntity):
     TEMPLATE = ClassifiedTags.from_text(_DIMENSION_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         geometry = DXFAttr(2)  # name of pseudo-Block containing the current dimension  entity geometry
         dimstyle = DXFAttr(3)
         defpoint1 = DXFAttr(10, xtype='Point2D/3D')
@@ -1060,6 +1090,8 @@ class Shape(GraphicEntity, ColorMixin):
     TEMPLATE = ClassifiedTags.from_text(_SHAPE_TPL)
 
     class DXFATTRIBS(GraphicEntity.DXFATTRIBS):
+        class META:
+            add_subclass = False
         insert = DXFAttr(10, xtype='Point2D/3D')
         size = DXFAttr(40)
         name = DXFAttr(2)

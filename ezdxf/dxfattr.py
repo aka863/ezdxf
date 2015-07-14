@@ -2,6 +2,8 @@
 # License: MIT License
 
 from __future__ import unicode_literals
+import copy
+
 __author__ = "mozman <mozman@gmx.at>"
 
 from collections import namedtuple
@@ -19,6 +21,7 @@ class DXFAttr(object):
         self.xtype = xtype
         self.default = default
         self.dxfversion = dxfversion
+        self.subclass = 0
 
 
 class SubClassedDXFAttr(DXFAttr):
@@ -29,34 +32,54 @@ class SubClassedDXFAttr(DXFAttr):
 
 class DXFMeta(type):
     def __new__(cls, name, parents, dct):
-        dct["_parent"] = []
+        META = dct.pop("META", None)
 
-        def add_parent(parent):
-            dct["_parent"].append(parent)
-            #for key, value in parent.items():
-            #    dct[key] = value
+        dct["_parent"] = parents
+        assert len(parents) <= 1
 
-        for p in parents:
-            add_parent(p)
-        print("jo", name)
+        subclass = -1
+        if parents:
+            subclass = getattr(parents[0], "_subclass", -1)
+            #subclass = max([getattr(field, "subclass", 0) for field in parents[0].values()], default=-1)
+
+        if getattr(META, "add_subclass", True):
+            subclass += 1
+
+        dct["_subclass"] = subclass
+        for key, value in dct.items():
+            if isinstance(value, DXFAttr):
+                dct[key] = copy.copy(value)
+                dct[key].subclass = subclass
+
         res = super(DXFMeta, cls).__new__(cls, name, parents, dct)
-        print("meta", res)
         return res
 
 
 class DXFAttributes(metaclass=DXFMeta):
+    class META:
+        add_subclass = False
+
     @classmethod
-    def __getitem__(self, name):
-        return getattr(self, name)
+    def __getitem__(cls, name):
+        return getattr(cls, name)
 
     def __contains__(self, name):
         return name in self.keys()
 
     @classmethod
+    def __iter__(cls):
+        return iter(cls.values())
+
+    @classmethod
     def keys(cls):
-        return [key for key in dir(cls) if not key.startswith("_")]
+        exclude = ["keys", "items", "values"]
+        return [key for key in dir(cls) if not key.startswith("_") and not key in exclude]
 
 
     @classmethod
     def items(cls):
         return [(key, getattr(cls, key)) for key in cls.keys()]
+
+    @classmethod
+    def values(cls):
+        return [getattr(cls, key) for key in cls.keys()]
