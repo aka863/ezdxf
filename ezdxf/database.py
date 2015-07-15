@@ -7,7 +7,7 @@ from ezdxf import options
 
 __author__ = "mozman <mozman@gmx.at>"
 
-from ezdxf.io.binarydata import compress_binary_data
+from ezdxf._io.binarydata import compress_binary_data
 
 
 class EntityDB(object):

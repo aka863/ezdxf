@@ -20,7 +20,7 @@ from ezdxf.tags import dxf_info
 from .tags import TagIterator
 from .importer import Importer
 from .const import DXFStructureError, DXFVersionError
-from ezdxf.io.zipmanager import ctxZipReader
+from ezdxf._io.zipmanager import ctxZipReader
 
 def new(dxfversion='AC1009'):
     """Create a new DXF drawing.

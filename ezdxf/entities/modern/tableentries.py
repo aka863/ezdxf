@@ -9,7 +9,7 @@ from ezdxf.tags import DXFTag
 from ezdxf.tags.classifiedtags import ClassifiedTags
 from ezdxf.entities.legacy import tableentries as legacy
 from ezdxf.entities.dxfentity import DXFEntity
-from ezdxf.tags.dxfattr import DXFAttr, DXFAttributes
+from ezdxf.entities.dxfattr import DXFAttr, DXFAttributes
 
 from ezdxf.entities.modern.graphics import BaseAttribs as Base
 

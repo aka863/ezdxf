@@ -34,11 +34,11 @@ from ezdxf.entities.legacy import graphics as legacy
 from ezdxf.tags import DXFTag, Tags
 from ezdxf.tags.dxftag import convert_tags_to_text_lines, convert_text_lines_to_tags
 from ezdxf.tags.classifiedtags import ClassifiedTags
-from ezdxf.tags.dxfattr import DXFAttr, DXFAttributes
+from ezdxf.entities.dxfattr import DXFAttr, DXFAttributes
 from ezdxf import const
 from ezdxf.entities.facemixins import PolyfaceMixin, PolymeshMixin
 from ezdxf.entities.tools import safe_3D_point
-from ezdxf.io import crypt
+from ezdxf._io import crypt
 from ezdxf.const import DXFStructureError
 
 class BaseAttribs(DXFAttributes):

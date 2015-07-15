@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
 from ezdxf.tags.classifiedtags import ClassifiedTags
-from ezdxf.tags.dxfattr import DXFAttr, DXFAttributes
+from ezdxf.entities.dxfattr import DXFAttr, DXFAttributes
 from ezdxf.entities.dxfentity import DXFEntity
 from ezdxf import const
 from ezdxf.const import VERTEXNAMES
@@ -90,7 +90,6 @@ class Line(GraphicEntity, ColorMixin):
         start = DXFAttr(10, xtype='Point2D/3D')
         end = DXFAttr(11, xtype='Point2D/3D')
 
-print("LINE: ", Line.DXFATTRIBS.start.subclass)
 _POINT_TPL = """  0
 POINT
   5

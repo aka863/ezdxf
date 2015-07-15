@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 import unittest
 
-from ezdxf.io.compressedstring import CompressedString
+from ezdxf._io.compressedstring import CompressedString
 
 
 class TestCompressedString(unittest.TestCase):

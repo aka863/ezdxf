@@ -7,10 +7,10 @@ __author__ = "mozman <mozman@gmx.at>"
 
 from io import StringIO
 
-from ezdxf.io.codepage import toencoding
+from ezdxf._io.codepage import toencoding
 from ezdxf.const import acadrelease, DXFStructureError
 from ezdxf.tags.dxftag import NONE_TAG, strtag2, DXFTag, is_point_code, cast_tag
-from ezdxf.io.compressedstring import CompressedString
+from ezdxf._io.compressedstring import CompressedString
 
 
 def write_tags(stream, tags):
@@ -172,8 +172,9 @@ class Tags(list):
         for tag in self:
             if tag.code in (5, 105):
                 handle = tag.value
-                break
-        int(handle, 16)  # check for valid handle
+                int(handle, 16)  # check for valid handle
+                return handle
+        int(handle, 16)
         return handle
 
     def replace_handle(self, new_handle):

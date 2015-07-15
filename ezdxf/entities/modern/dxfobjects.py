@@ -8,7 +8,7 @@ __author__ = "mozman <mozman@gmx.at>"
 
 from ezdxf.tags import DXFTag
 from ezdxf.tags.classifiedtags import ClassifiedTags
-from ezdxf.tags.dxfattr import DXFAttr, DXFAttributes
+from ezdxf.entities.dxfattr import DXFAttr, DXFAttributes
 from ezdxf.entities.dxfentity import DXFEntity
 
 ENTRY_NAME_CODE = 3

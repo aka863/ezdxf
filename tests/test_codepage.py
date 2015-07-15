@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 
 import unittest
 
-from ezdxf.io.codepage import toencoding, tocodepage
+from ezdxf._io.codepage import toencoding, tocodepage
 
 
 class TestToEncoding(unittest.TestCase):

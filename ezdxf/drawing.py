@@ -13,7 +13,7 @@ from .tags import TagIterator, DXFTag
 from ezdxf.entities.dxffactory import get_dxffactory
 from ezdxf.templates import TemplateFinder
 from .options import options
-from ezdxf.io.codepage import tocodepage, toencoding
+from ezdxf._io.codepage import tocodepage, toencoding
 from ezdxf.sections import Sections
 from .juliandate import juliandate
 
