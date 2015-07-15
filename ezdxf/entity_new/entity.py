@@ -1,23 +1,22 @@
-import copy
-import collections
 from ezdxf.entity_new.fields import Field, Point3D, Point2D
-from ezdxf.entity_new.tags import Tags, Tag
+from ezdxf.entity_new.tags import TagContainer, Tag
 
 
 class EntityMeta(type):
     def __new__(cls, name, parent, dct):
         """
-        Register Fields
+        Set subclass index on entity/fields
         """
         meta = dct.get("META", object)
 
+        # get current subclass index
         subclass = getattr(meta, "subclass", None)
         if subclass is None:
             subclass = getattr(parent[0], "_subclass")
+
         dct["_subclass"] = subclass
         for key, value in dct.items():
             if isinstance(value, Field):
-                dct[key] = copy.copy(value)
                 dct[key].subclass = subclass
 
         res = super(EntityMeta, cls).__new__(cls, name, parent, dct)
@@ -30,7 +29,7 @@ class Entity(object, metaclass=EntityMeta):
         subclass = 0
 
     def __init__(self, tags=None, **kwargs):
-        self._tags = tags or Tags()
+        self._tags = tags or TagContainer()
         for fieldname, field in self._fields().items():
             if fieldname in kwargs:
                 setattr(self, fieldname, kwargs.pop(fieldname))
@@ -70,30 +69,6 @@ class Entity(object, metaclass=EntityMeta):
         """
         handle = self.get_values(100) + self.get_values(105)
         return handle[0]
-
-
-
-
-
-
-
-class Circle(Entity):
-    r = Point3D(10, default=[1,2])
-
-a = Circle()
-print("a", a, a.r)
-print("r", Circle.r)
-Circle.r = Point2D(10,[1,3])
-print("r", Circle.r, Circle.r.default)
-a.r = [10,2]
-b = Circle()
-b.r= [1,2]
-print("a", a.r)
-print("b",b.r)
-b.r=[2,3]
-c=Circle()
-print(b.r)
-print(a.r)
 
 
 # '(.*)': (DXFAttr.*\)),(.*)

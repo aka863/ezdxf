@@ -3,7 +3,7 @@ import collections
 Tag = collections.namedtuple("TAG", "key value")
 
 
-class Tags():
+class TagContainer():
     def __init__(self, tags=None):
         self._tags = tags or []
 

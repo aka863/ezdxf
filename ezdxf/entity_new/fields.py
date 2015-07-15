@@ -1,6 +1,13 @@
 
 class Field():
     def __init__(self, key, default=None, subclass=None):
+        """
+
+        :param key: DXF key
+        :param default: Default value
+        :param subclass: subclass index (default=automatic)
+        :return:
+        """
         self.key = key
         self.default = default
         self.subclass = subclass
@@ -13,15 +20,22 @@ class Field():
 
     def __set__(self, instance, value):
         # todo None->delete (required-fields?)
-        self.validate(value)
+        try:
+            self.validate(value)
+        except Exception as e:
+            fieldname = ""
+            for name, field in instance._fields().items():
+                if field is self:
+                    fieldname = name
+            raise ValueError("Invalid Value {} on field {}/{}".format(value, instance, fieldname))
         self.setter(instance, value)
 
     def setter(self, instance, value):
-        instance.set_values(self.key, [value])
+        instance.set_values(self.key, value)
 
     def getter(self, parent):
         value = parent.get_values(self.key)
-        return value[0]
+        return value
 
     def validate(self, value):
         return value
@@ -35,6 +49,16 @@ class Point2D(Field):
         assert not isinstance(value, str)
         assert len(value) == 2
 
+    def setter(self, instance, value):
+
+        instance.set_values(self.key, value[0])
+        instance.set_values(self.key+10, value[1])
+
+    def getter(self, parent):
+        x = parent.get_values(self.key)
+        y = parent.get_values(self.key + 10)
+        return [x, y]
+
 
 class Point3D(Field):
     def validate(self, value):
@@ -45,7 +69,7 @@ class Point3D(Field):
         # Append z-coordinate
         if len(value) == 2:
             value = value + [0]
-        print(value)
+
         instance.set_values(self.key, value[0])
         instance.set_values(self.key+10, value[1])
         instance.set_values(self.key+20, value[2])
@@ -54,8 +78,6 @@ class Point3D(Field):
         x = parent.get_values(self.key)
         y = parent.get_values(self.key + 10)
         z = parent.get_values(self.key + 20)
-        print(x,y,z)
-        print("jo", list(parent._tags))
         return [x, y, z]
 
 

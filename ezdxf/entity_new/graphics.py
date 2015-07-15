@@ -3,11 +3,11 @@ from ezdxf.entity_new import fields
 
 
 class GraphicsEntity(Entity):
-    handle = fields.Hex(8)
-    owner = fields.Field(2)
+    handle = fields.Hex(5)
+    owner = fields.Field(330)
 
 
-class Circle(Entity):
+class Circle(GraphicsEntity):
     _subclasses = [
         "first",
         "second",
@@ -20,7 +20,15 @@ class Circle(Entity):
 
 if __name__ == "__main__":
     c=Circle()
-    print(list(c._tags))
+    c.handle = "FF"
+    c.owner = 0
     c.r = 10
     c.position = [1,2]
+    c.position = (10, 20)
     print(list(c._tags))
+    print(c.owner, c.r, c.position)
+
+    # outputs:
+    # [TAG(key=5, value='FF'), TAG(key=330, value=0), TAG(key=8, value=10), TAG(key=10, value=10), TAG(key=20, value=20)]
+    # 0 10 [10, 20]
+    # c.handle = "XY" raises ValueError
