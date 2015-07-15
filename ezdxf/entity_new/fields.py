@@ -57,7 +57,7 @@ class Point2D(Field):
     def getter(self, parent):
         x = parent.get_values(self.key)
         y = parent.get_values(self.key + 10)
-        return [x, y]
+        return x, y
 
 
 class Point3D(Field):
@@ -78,7 +78,7 @@ class Point3D(Field):
         x = parent.get_values(self.key)
         y = parent.get_values(self.key + 10)
         z = parent.get_values(self.key + 20)
-        return [x, y, z]
+        return x, y, z
 
 
 class Integer(Field):
@@ -89,4 +89,18 @@ class Integer(Field):
 class Hex(Field):
     def validate(self, value):
         int(value, 16)
+
+
+class Reference(Field):
+    def __init__(self, key, foreignclass, many=False, subclass=None):
+        super(Reference, self).__init__(key, subclass=subclass)
+        self.many = many
+        self.foreignclass = foreignclass
+
+    def getter(self, parent):
+        pass
+
+    def setter(self, instance, value):
+        pass
+
 

@@ -1,4 +1,4 @@
-from ezdxf.entity_new.fields import Field, Point3D, Point2D
+from ezdxf.entity_new.fields import Field
 from ezdxf.entity_new.tags import TagContainer, Tag
 
 
@@ -28,8 +28,8 @@ class Entity(object, metaclass=EntityMeta):
     class META:
         subclass = 0
 
-    def __init__(self, tags=None, **kwargs):
-        self._tags = tags or TagContainer()
+    def __init__(self, **kwargs):
+        self._tags = TagContainer()
         for fieldname, field in self._fields().items():
             if fieldname in kwargs:
                 setattr(self, fieldname, kwargs.pop(fieldname))
@@ -37,6 +37,11 @@ class Entity(object, metaclass=EntityMeta):
                 setattr(self, fieldname, field.default)
 
         assert len(kwargs) == 0  # check if there are no additional keyword arguments
+
+    @classmethod
+    def from_tags(cls, tags):
+        instance = cls()
+        instance._tags = tags
 
     @classmethod
     def _fields(cls):
@@ -67,8 +72,22 @@ class Entity(object, metaclass=EntityMeta):
         """
         get handle property
         """
-        handle = self.get_values(100) + self.get_values(105)
+        handle = self.get_values(100, multiple=True) + self.get_values(105, multiple=True)
         return handle[0]
+
+    def write(self, stream):
+        """
+        Write entity tags to output stream
+        """
+        for tag in self._tags:
+            tag.write(stream)
+
+    def copy(self):
+        tags = [tag.copy() for tag in self._tags]
+        instance = self.from_tags(tags)
+        # todo:
+        # instance.handle = None
+        return instance
 
 
 # '(.*)': (DXFAttr.*\)),(.*)

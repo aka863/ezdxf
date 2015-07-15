@@ -3,6 +3,8 @@
 # Copyright (C) 2011, Manfred Moitzi
 # License: MIT License
 from __future__ import unicode_literals
+import collections
+
 __author__ = "mozman <mozman@gmx.at>"
 
 from ezdxf.sections.defaultchunk import DefaultChunk, iter_chunks, CompressedDefaultChunk
@@ -12,6 +14,17 @@ from ezdxf.sections.blocks import BlocksSection
 from ezdxf.sections.entity import EntitySection, ClassesSection
 from ezdxf.sections.objects import ObjectsSection
 from ezdxf.options import options
+
+SECTIONS = collections.OrderedDict([
+    ("HEADER", HeaderSection),
+    ("CLASSES", ClassesSection),
+    ("TABLES", TablesSection),
+    ("BLOCKS", BlocksSection),
+    ("ENTITIES", EntitySection),
+    ("OBJECTS", ObjectsSection),
+    ("THUMBNAILIMAGE", DefaultChunk),
+    ("ACDSDATA", DefaultChunk)
+])
 
 SECTION_MAP = {
     'CLASSES': ClassesSection,

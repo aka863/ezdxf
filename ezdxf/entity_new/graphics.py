@@ -27,6 +27,7 @@ if __name__ == "__main__":
     c.position = (10, 20)
     print(list(c._tags))
     print(c.owner, c.r, c.position)
+    c.position = -1
 
     # outputs:
     # [TAG(key=5, value='FF'), TAG(key=330, value=0), TAG(key=8, value=10), TAG(key=10, value=10), TAG(key=20, value=20)]
