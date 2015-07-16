@@ -8,7 +8,7 @@ __author__ = "mozman <mozman@gmx.at>"
 from collections import OrderedDict
 
 from .c23 import ustr
-from .dxftag import strtag
+from .dxftag import strtag, DXFTag
 from .tags import TagGroups, Tags, DXFStructureError
 
 MIN_HEADER_TEXT = """  0
@@ -191,7 +191,7 @@ class HeaderVar:
             code, value = self.tag
             s = []
             for coord in value:
-                s.append(strtag((code, coord)))
+                s.append(strtag(DXFTag(code, coord)))
                 code += 10
             return "".join(s)
         else:
