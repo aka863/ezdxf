@@ -9,16 +9,13 @@ from io import StringIO
 
 from .codepage import toencoding
 from .const import acadrelease, DXFStructureError
-from .dxftag import NONE_TAG, strtag2, DXFTag, is_point_code, cast_tag
+from .dxftag import NONE_TAG, DXFTag, is_point_code, cast_tag
 from .compressedstring import CompressedString
 
 
 def write_tags(stream, tags):
     for tag in tags:
-        if isinstance(tag, CompressedTags):
-            tag.write(stream)
-        else:
-            stream.write(strtag2(tag))
+        tag.write(stream)
 
 
 class TagIterator(object):
@@ -325,7 +322,7 @@ class CompressedTags(object):
     """
     def __init__(self, code, tags):
         self.code = code
-        self.value = CompressedString("".join(strtag2(tag) for tag in tags))
+        self.value = CompressedString("".join(str(tag) for tag in tags))
 
     def __getitem__(self, item):
         if item == 0:
