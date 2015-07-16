@@ -14,6 +14,41 @@ NONE_TAG = DXFTag(999999, 'NONE')
 TAG_STRING_FORMAT = '%3d\n%s\n'
 
 
+class DXFTag():
+    STRING_FORMAT = '%3d\n%s\n'
+
+    def __init__(self, code, value):
+        self.code = code
+        self.value = value
+
+    def __eq__(self, other):
+        return tuple(self) == tuple(other)
+
+    def __str__(self):
+        code = self.code
+        if is_point_code(code):
+            s = ""
+            for index, coord in enumerate(self.value):
+                code = self.code + 10*index
+                s += self.STRING_FORMAT % (code, coord)
+            return s
+        else:
+            return self.STRING_FORMAT % (self.code, self.value)
+
+    def __repr__(self):
+        return "DXFTag({}, {})".format(self.code, self.value)
+
+    def __getitem__(self, item):
+        return (self.code, self.value)[item]
+
+    def __len__(self):
+        return 2
+
+    def write(self, stream):
+        stream.write(str(self))
+
+
+
 def point_tuple(value):
     return tuple(float(f) for f in value)
 
@@ -94,19 +129,9 @@ def tag_type(code):
 
 
 def strtag(tag):
+    if isinstance(tag, DXFTag):
+        tag = tuple(tag)
     return TAG_STRING_FORMAT % tag
-
-
-def strtag2(tag):
-    code = tag.code
-    if is_point_code(code):
-        s = ""
-        for coord in tag.value:
-            s += strtag(DXFTag(code, coord))
-            code += 10
-        return s
-    else:
-        return strtag(tag)
 
 
 def convert_tags_to_text_lines(line_tags):
