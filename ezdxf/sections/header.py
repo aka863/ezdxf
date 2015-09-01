@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 from ..tools.c23 import ustr
 from ..lldxf.types import strtag
-from ..lldxf.tags import TagGroups, Tags, DXFStructureError
+from ..lldxf.tags import TagGroups, TagList, DXFStructureError
 
 MIN_HEADER_TEXT = """  0
 SECTION
@@ -99,7 +99,7 @@ class CustomVars():
 
 
 class HeaderSection(object):
-    MIN_HEADER_TAGS = Tags.from_text(MIN_HEADER_TEXT)
+    MIN_HEADER_TAGS = TagList.from_text(MIN_HEADER_TEXT)
     name = 'header'
 
     def __init__(self, tags=None):

@@ -9,13 +9,13 @@ from __future__ import unicode_literals
 
 import unittest
 
-from ezdxf.tools.test import DrawingProxy, Tags
+from ezdxf.tools.test import DrawingProxy, TagList
 from ezdxf.sections.header import HeaderSection
 
 
 class TestHeaderSection(unittest.TestCase):
     def setUp(self):
-        tags = Tags.from_text(TESTHEADER)
+        tags = TagList.from_text(TESTHEADER)
         dwg = DrawingProxy('AC1009')
         self.header = HeaderSection(tags)
         self.header.set_headervar_factory(dwg.dxffactory.headervar_factory)
@@ -77,7 +77,7 @@ class TestHeaderSection(unittest.TestCase):
 
 class TestCustomProperties(unittest.TestCase):
     def setUp(self):
-        tags = Tags.from_text(TESTCUSTOMPROPERTIES)
+        tags = TagList.from_text(TESTCUSTOMPROPERTIES)
         dwg = DrawingProxy('AC1009')
         self.header = HeaderSection(tags)
         self.header.set_headervar_factory(dwg.dxffactory.headervar_factory)

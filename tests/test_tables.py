@@ -10,14 +10,14 @@ from __future__ import unicode_literals
 import unittest
 from io import StringIO
 
-from ezdxf.tools.test import DrawingProxy, normlines, Tags
+from ezdxf.tools.test import DrawingProxy, normlines, TagList
 from ezdxf.sections.tables import TablesSection
 
 
 class TestTables(unittest.TestCase):
     def setUp(self):
         self.dwg = DrawingProxy('AC1009')
-        self.tables = TablesSection(Tags.from_text(TEST_TABLES), self.dwg)
+        self.tables = TablesSection(TagList.from_text(TEST_TABLES), self.dwg)
 
     def test_constructor(self):
         self.assertIsNotNone(self.tables.layers)

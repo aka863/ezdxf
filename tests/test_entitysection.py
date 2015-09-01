@@ -11,7 +11,7 @@ import unittest
 from io import StringIO
 
 import ezdxf
-from ezdxf.tools.test import DrawingProxy, normlines, Tags
+from ezdxf.tools.test import DrawingProxy, normlines, TagList
 from ezdxf.sections.entities import EntitySection
 
 
@@ -29,7 +29,7 @@ def make_test_drawing(version):
 class TestEntitySection(unittest.TestCase):
     def setUp(self):
         self.dwg = DrawingProxy('AC1009')
-        self.section = EntitySection(Tags.from_text(TESTENTITIES), self.dwg)
+        self.section = EntitySection(TagList.from_text(TESTENTITIES), self.dwg)
 
     def test_write(self):
         stream = StringIO()
@@ -39,7 +39,7 @@ class TestEntitySection(unittest.TestCase):
         self.assertEqual(normlines(TESTENTITIES), normlines(result))
 
     def test_empty_section(self):
-        section = EntitySection(Tags.from_text(EMPTYSEC), self.dwg)
+        section = EntitySection(TagList.from_text(EMPTYSEC), self.dwg)
         stream = StringIO()
         section.write(stream)
         result = stream.getvalue()

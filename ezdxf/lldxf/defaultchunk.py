@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from .tags import Tags, CompressedTags
+from .tags import TagList, CompressedTags
 from .const import COMPRESSED_TAGS
 
 
@@ -29,7 +29,7 @@ class DefaultChunk(object):
 class CompressedDefaultChunk(DefaultChunk):
     def __init__(self, tags, drawing):
         compressed_tags = CompressedTags(COMPRESSED_TAGS, tags)
-        super(CompressedDefaultChunk, self).__init__(Tags((tags[0], tags[1], compressed_tags)), drawing)
+        super(CompressedDefaultChunk, self).__init__(TagList((tags[0], tags[1], compressed_tags)), drawing)
         self._compressed_tags = compressed_tags
 
     def write(self, stream):
@@ -41,7 +41,7 @@ def iter_chunks(tagreader, stoptag='EOF', endofchunk='ENDSEC'):
         tag = next(tagreader)
         if tag == (0, stoptag):
             return
-        tags = Tags([tag])
+        tags = TagList([tag])
         while tag != (0, endofchunk):
             tag = next(tagreader)
             tags.append(tag)

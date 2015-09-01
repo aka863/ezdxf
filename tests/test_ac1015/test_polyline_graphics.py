@@ -11,7 +11,7 @@ import unittest
 
 import ezdxf
 from ezdxf.lldxf.const import VTX_3D_POLYLINE_VERTEX
-from ezdxf.tools.test import DrawingProxy, Tags
+from ezdxf.tools.test import DrawingProxy, TagList
 from ezdxf.sections.entities import EntitySection
 
 DWG = ezdxf.new('AC1015')
@@ -226,7 +226,7 @@ class TestNewStylePolyface(unittest.TestCase):
 
     def setUp(self):
         self.dwg = DrawingProxy('AC1018')
-        self.section = EntitySection(Tags.from_text(NEW_STYLE_POLYFACE), self.dwg)
+        self.section = EntitySection(TagList.from_text(NEW_STYLE_POLYFACE), self.dwg)
 
     def test_face_count(self):
         polyface = list(self.section)[0]

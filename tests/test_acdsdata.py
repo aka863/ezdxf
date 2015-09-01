@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import unittest
 
 from ezdxf.tools.test import DrawingProxy
-from ezdxf.lldxf.tags import Tags
+from ezdxf.lldxf.tags import TagList
 from ezdxf.sections.acdsdata import AcDsDataSection
 
 DWG = DrawingProxy('AC1027')
@@ -36,7 +36,7 @@ class TestAcDsDataSection(unittest.TestCase):
         length = sum(len(tag.value) for tag in binary_data) / 2
         self.assertEqual(asm_data[2].value, length)
 
-ACDSSECTION = Tags.from_text("""  0
+ACDSSECTION = TagList.from_text("""  0
 SECTION
   2
 ACDSDATA

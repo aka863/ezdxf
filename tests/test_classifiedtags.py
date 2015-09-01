@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 import unittest
 from io import StringIO
 
-from ezdxf.lldxf.tags import Tags
+from ezdxf.lldxf.tags import TagList
 from ezdxf.lldxf.classifiedtags import ClassifiedTags
 
 
@@ -22,7 +22,7 @@ class TestClassifiedTags(unittest.TestCase):
         self.assertIsNotNone(self.xtags.get_appdata('{ACAD_XDICTIONARY'))
 
     def test_init_with_tags(self):
-        tags = Tags.from_text(XTAGS1)
+        tags = TagList.from_text(XTAGS1)
         xtags = ClassifiedTags(tags)
         self.assertEqual(3, len(xtags.subclasses))
         self.assertEqual(1, len(xtags.xdata))
@@ -233,7 +233,7 @@ class Test2xSubclass(unittest.TestCase):
             self.tags.get_subclass('AcDbText', pos=4)
 
     def test_skip_empty_subclass(self):
-        self.tags.subclasses[1] = Tags()
+        self.tags.subclasses[1] = TagList()
         subclass2 = self.tags.get_subclass('AcDbText')
         self.assertEqual((100, 'AcDbText'), subclass2[0])
 

@@ -120,7 +120,7 @@ class StringIterator(TagIterator):
 
 
 def text2tags(text):
-    return Tags(StringIterator(text))
+    return TagList(StringIterator(text))
 
 
 class DXFInfo(object):
@@ -157,10 +157,10 @@ def dxf_info(stream):
     return info
 
 
-class Tags(list):
+class TagList(list):
     """ DXFTag() chunk as flat list. """
     def __init__(self, tags):
-        super(Tags, self).__init__(tags)
+        super(TagList, self).__init__(tags)
 
     @classmethod
     def from_text(cls, text):
@@ -299,7 +299,7 @@ class Tags(list):
         Returns the collected tags in a collection of type Tag().
         """
         codes = frozenset(codes)
-        collected_tags = Tags()
+        collected_tags = TagList()
         if end is None:
             end = len(self)
         index = start
@@ -358,12 +358,12 @@ class TagGroups(list):
             return tag
 
         tag_iterator = iter(tags)
-        group = Tags([start_tag(tag_iterator)])
+        group = TagList([start_tag(tag_iterator)])
 
         for tag in tag_iterator:
             if tag.code == self.splitcode:
                 push_group()
-                group = Tags([tag])
+                group = TagList([tag])
             else:
                 group.append(tag)
         push_group()
@@ -373,11 +373,11 @@ class TagGroups(list):
 
     @classmethod
     def from_text(cls, text, splitcode=0):
-        return cls(Tags.from_text(text), splitcode)
+        return cls(TagList.from_text(text), splitcode)
 
 
 def strip_tags(tags, codes):
-    return Tags((tag for tag in tags if tag.code not in codes))
+    return TagList((tag for tag in tags if tag.code not in codes))
 
 
 class CompressedTags(object):
@@ -397,7 +397,7 @@ class CompressedTags(object):
             raise IndexError
 
     def decompress(self):
-        return Tags.from_text(self.value.decompress())
+        return TagList.from_text(self.value.decompress())
 
     def write(self, stream):
         stream.write(self.value.decompress())

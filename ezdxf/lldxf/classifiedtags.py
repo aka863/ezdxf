@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
-from .tags import Tags, StringIterator, DXFStructureError, DXFTag, write_tags
+from .tags import TagList, StringIterator, DXFStructureError, DXFTag, write_tags
 
 APP_DATA_MARKER = 102
 SUBCLASS_MARKER = 100
@@ -57,7 +57,7 @@ class ClassifiedTags(object):
             """ a subclass can contain appdata, but not xdata, ends with
             SUBCLASSMARKER or XDATACODE.
             """
-            data = Tags() if starttag is None else Tags([starttag])
+            data = TagList() if starttag is None else TagList([starttag])
             try:
                 while True:
                     tag = next(tagstream)
@@ -77,7 +77,7 @@ class ClassifiedTags(object):
 
         def collect_appdata(starttag):
             """ appdata, cannot contain xdata or subclasses """
-            data = Tags([starttag])
+            data = TagList([starttag])
             while True:
                 try:
                     tag = next(tagstream)
@@ -92,7 +92,7 @@ class ClassifiedTags(object):
             """ xdata are always at the end of the entity and can not contain
             appdata or subclasses
             """
-            data = Tags([starttag])
+            data = TagList([starttag])
             try:
                 while True:
                     tag = next(tagstream)

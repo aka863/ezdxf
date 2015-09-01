@@ -7,7 +7,7 @@ __author__ = "mozman <mozman@gmx.at>"
 
 from ezdxf.lldxf.defaultchunk import iter_chunks
 from .table import GenericTable, Table, ViewportTable
-from ..lldxf.tags import DXFStructureError, Tags
+from ..lldxf.tags import DXFStructureError, TagList
 from ..options import options
 
 MIN_TABLE_SECTION = """  0
@@ -36,7 +36,7 @@ class TablesSection(object):
         self._drawing = drawing
         self._tables = {}
         if tags is None:
-            tags = Tags.from_text(MIN_TABLE_SECTION)
+            tags = TagList.from_text(MIN_TABLE_SECTION)
         self._setup_tables(tags)
 
     def __iter__(self):
@@ -69,7 +69,7 @@ class TablesSection(object):
 
     def _create_required_tables(self):
         def setup_table(name):
-            tags = Tags.from_text(MIN_TABLE.replace('DUMMY', name))
+            tags = TagList.from_text(MIN_TABLE.replace('DUMMY', name))
             self._new_table(name, tags)
 
         if 'layers' not in self._tables:

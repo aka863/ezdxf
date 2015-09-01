@@ -27,7 +27,7 @@ __author__ = "mozman <mozman@gmx.at>"
 from contextlib import contextmanager
 
 from ..legacy import graphics as legacy
-from ..lldxf.tags import DXFTag, Tags
+from ..lldxf.tags import DXFTag, TagList
 from ..lldxf.classifiedtags import ClassifiedTags
 from ..lldxf.attributes import DXFAttr, DXFAttributes, DefSubclass
 from ..lldxf import const
@@ -556,7 +556,7 @@ vertex_subclass = (
 )
 
 
-EMPTY_VERTEX_SUBCLASS = Tags()
+EMPTY_VERTEX_SUBCLASS = TagList()
 
 
 class Vertex(legacy.Vertex, ModernGraphicEntityExtension):

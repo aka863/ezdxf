@@ -78,7 +78,7 @@ from __future__ import unicode_literals
 __author__ = "mozman <mozman@gmx.at>"
 
 from itertools import islice
-from ..lldxf.tags import TagGroups, DXFStructureError, write_tags, Tags
+from ..lldxf.tags import TagGroups, DXFStructureError, write_tags, TagList
 
 
 class AcDsDataSection(object):
@@ -112,7 +112,7 @@ class AcDsDataSection(object):
             start_index += 1
 
         for group in TagGroups(islice(tags, start_index, len(tags)-1)):
-            self._append_entity(AcDsData(Tags(group)))  # tags have no subclasses
+            self._append_entity(AcDsData(TagList(group)))  # tags have no subclasses
 
     def _append_entity(self, entity):
         cls = ACDSDATA_TYPES.get(entity.dxftype())
@@ -139,7 +139,7 @@ class AcDsData(object):
         return self.tags[0].value
 
 
-class Section(Tags):
+class Section(TagList):
     @property
     def name(self):
         return self[0].value
@@ -178,7 +178,7 @@ class AcDsRecord(object):
         return self.get_section(name)
 
     def _write_header(self, stream):
-        write_tags(stream, Tags([self._dxftype, self.flags]))
+        write_tags(stream, TagList([self._dxftype, self.flags]))
 
     def write(self, stream):
         self._write_header(stream)

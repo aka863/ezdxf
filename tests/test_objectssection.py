@@ -10,14 +10,14 @@ from __future__ import unicode_literals
 import unittest
 from io import StringIO
 
-from ezdxf.tools.test import DrawingProxy, Tags, normlines
+from ezdxf.tools.test import DrawingProxy, TagList, normlines
 from ezdxf.sections.objects import ObjectsSection
 
 
 class TestObjectsSection(unittest.TestCase):
     def setUp(self):
         self.dwg = DrawingProxy('AC1009')
-        self.section = ObjectsSection(Tags.from_text(TESTOBJECTS), self.dwg)
+        self.section = ObjectsSection(TagList.from_text(TESTOBJECTS), self.dwg)
 
     def test_write(self):
         stream = StringIO()
@@ -27,7 +27,7 @@ class TestObjectsSection(unittest.TestCase):
         self.assertEqual(normlines(TESTOBJECTS), normlines(result))
 
     def test_empty_section(self):
-        section = ObjectsSection(Tags.from_text(EMPTYSEC), self.dwg)
+        section = ObjectsSection(TagList.from_text(EMPTYSEC), self.dwg)
         stream = StringIO()
         section.write(stream)
         result = stream.getvalue()

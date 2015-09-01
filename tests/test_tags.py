@@ -10,7 +10,7 @@ import unittest
 from io import StringIO
 
 from ezdxf.tools.c23 import ustr
-from ezdxf.lldxf.tags import StringIterator, Tags, dxf_info
+from ezdxf.lldxf.tags import StringIterator, TagList, dxf_info
 from ezdxf.lldxf.types import tag_type, point_tuple, strtag
 
 TEST_TAGREADER = """  0
@@ -185,7 +185,7 @@ class TestTagReader(unittest.TestCase):
         self.assertEqual('check mark 2', tag.value)
 
     def test_float_to_int(self):
-        tags = Tags.from_text(FLOAT_FOR_INT_TAGS)
+        tags = TagList.from_text(FLOAT_FOR_INT_TAGS)
         self.assertEqual(int, type(tags[0].value))
 
 
@@ -228,7 +228,7 @@ class HandlesMock:
 
 class TestTags(unittest.TestCase):
     def setUp(self):
-        self.tags = Tags.from_text(TEST_TAGREADER)
+        self.tags = TagList.from_text(TEST_TAGREADER)
 
     def test_from_text(self):
         self.assertEqual(8, len(self.tags))
@@ -265,11 +265,11 @@ class TestTags(unittest.TestCase):
             self.tags.find_first(1234)
 
     def test_get_handle_5(self):
-        tags = Tags.from_text(TESTHANDLE5)
+        tags = TagList.from_text(TESTHANDLE5)
         self.assertEqual('F5', tags.get_handle())
 
     def test_get_handle_105(self):
-        tags = Tags.from_text(TESTHANDLE105)
+        tags = TagList.from_text(TESTHANDLE105)
         self.assertEqual('F105', tags.get_handle())
 
     def test_get_handle_create_new(self):
@@ -277,18 +277,18 @@ class TestTags(unittest.TestCase):
             self.tags.get_handle()
 
     def test_find_all(self):
-        tags = Tags.from_text(TESTFINDALL)
+        tags = TagList.from_text(TESTFINDALL)
         self.assertEqual(3, len(tags.find_all(0)))
 
     def test_tag_index(self):
-        tags = Tags.from_text(TESTFINDALL)
+        tags = TagList.from_text(TESTFINDALL)
         index = tags.tag_index(0)
         self.assertEqual(0, index)
         index = tags.tag_index(0, index + 1)
         self.assertEqual(1, index)
 
     def test_find_first_value_error(self):
-        tags = Tags.from_text(TESTFINDALL)
+        tags = TagList.from_text(TESTFINDALL)
         with self.assertRaises(ValueError):
             tags.tag_index(1)
 
@@ -303,12 +303,12 @@ class TestTags(unittest.TestCase):
         self.assertNotEqual(self.tags, clone)
 
     def test_replace_handle_5(self):
-        tags = Tags.from_text(TESTHANDLE5)
+        tags = TagList.from_text(TESTHANDLE5)
         tags.replace_handle('AA')
         self.assertEqual('AA', tags.get_handle())
 
     def test_replace_handle_105(self):
-        tags = Tags.from_text(TESTHANDLE105)
+        tags = TagList.from_text(TESTHANDLE105)
         tags.replace_handle('AA')
         self.assertEqual('AA', tags.get_handle())
 
@@ -385,7 +385,7 @@ FOUR
 
 class TestTagsCollect(unittest.TestCase):
     def setUp(self):
-        self.tags = Tags.from_text(COLLECT_1)
+        self.tags = TagList.from_text(COLLECT_1)
 
     def test_with_start_param(self):
         collected_tags = self.tags.collect_consecutive_tags([1, 2, 3], start=1)
@@ -411,6 +411,6 @@ class TestTagsCollect(unittest.TestCase):
         self.assertEqual(10, len(collected_tags))
 
     def test_emtpy_tags(self):
-        tags = Tags()
+        tags = TagList()
         collected_tags = tags.collect_consecutive_tags([0, 1, 2, 3, 4])
         self.assertEqual(0, len(collected_tags))
