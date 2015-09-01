@@ -159,6 +159,17 @@ def dxf_info(stream):
 
 class Tags(list):
     """ DXFTag() chunk as flat list. """
+    def __init__(self, tags):
+        super(Tags, self).__init__(tags)
+
+    @classmethod
+    def from_text(cls, text):
+        return cls(TagIterator(StringIO(text)))
+
+    @classmethod
+    def load(cls, fp):
+        return cls(TagIterator(fp))
+
     def write(self, stream):
         write_tags(stream, self)
 
@@ -228,6 +239,18 @@ class Tags(list):
                 return start + index
         raise ValueError(code)
 
+    def tag_index_iterator(self, code, start=0, end=None):
+        """
+        Find tags with a given code and yield their positions
+        :param code:
+        :param start:
+        :param end:
+        :return:
+        """
+        for index, tag in enumerate(self[start:end]):
+            if tag.code == code:
+                yield start + index
+
     def has_tag(self, code):
         for tag in self:
             if tag.code == code:
@@ -254,10 +277,6 @@ class Tags(list):
     def get_value(self, code):
         index = self.tag_index(code)
         return self[index].value
-
-    @staticmethod
-    def from_text(text):
-        return Tags(StringIterator(text))
 
     def __copy__(self):
         def copy_tag(tag):
@@ -292,6 +311,28 @@ class Tags(list):
             else:
                 break
         return collected_tags
+
+    def get_groups(self, splitcode=0):
+        """
+        Split Tags into groups, which all start with the given splitcode
+        """
+        groups = []
+
+        def add_group(i1, i2):
+            groups.append(self.__class__(self[i1:i2]))
+
+        positions = self.tag_index_iterator(splitcode)
+        try:
+            start = next(positions)
+        except StopIteration:
+            return []
+
+        for end in positions:
+            add_group(start, end)
+            start = end
+
+        add_group(start, -1)
+
 
 class TagGroups(list):
     """
@@ -330,9 +371,9 @@ class TagGroups(list):
     def get_name(self, index):
         return self[index][0].value
 
-    @staticmethod
-    def from_text(text, splitcode=0):
-        return TagGroups(Tags.from_text(text), splitcode)
+    @classmethod
+    def from_text(cls, text, splitcode=0):
+        return cls(Tags.from_text(text), splitcode)
 
 
 def strip_tags(tags, codes):
@@ -340,7 +381,8 @@ def strip_tags(tags, codes):
 
 
 class CompressedTags(object):
-    """ Store multiple tags, compressed by zlib, as one DXFTag(code, value). value is a CompressedString() object.
+    """
+    Store multiple tags, compressed by zlib, as one DXFTag(code, value). value is a CompressedString() object.
     """
     def __init__(self, code, tags):
         self.code = code
