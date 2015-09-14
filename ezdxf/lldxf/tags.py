@@ -159,7 +159,8 @@ def dxf_info(stream):
 
 class TagList(list):
     """ DXFTag() chunk as flat list. """
-    def __init__(self, tags):
+    def __init__(self, tags=None):
+        tags = tags or []
         super(TagList, self).__init__(tags)
 
     @classmethod
